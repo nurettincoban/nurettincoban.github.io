@@ -34,7 +34,13 @@ body {
   font: 17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-main { max-width: 640px; margin: 0 auto; padding: 72px 16px 48px; }
+main { position: relative; max-width: 640px; margin: 0 auto; padding: 72px 16px 48px; }
+#bg {
+  position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1;
+  opacity: 0; transition: opacity 1.2s ease; pointer-events: none;
+}
+#bg.on { opacity: 1; }
+.project { backdrop-filter: blur(2px); }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
@@ -69,6 +75,7 @@ footer { margin-top: 64px; color: var(--muted); font-size: 14px; }
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main>
   <div class="me">
     <img src="https://github.com/nurettincoban.png?size=176" alt="" width="88" height="88">
@@ -148,6 +155,148 @@ fetch('https://api.github.com/users/nurettincoban/repos?per_page=100')
     });
   })
   .catch(function () {});
+</script>
+
+<script type="module">
+// Background: a field of dots on a tilted plane, waving in the vertex shader.
+// Everything moves on the GPU in one draw call; the CPU only updates three uniforms a frame.
+import {
+  WebGLRenderer, Scene, PerspectiveCamera, BufferGeometry, BufferAttribute,
+  ShaderMaterial, Points, Color, Vector2
+} from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js';
+
+const canvas = document.getElementById('bg');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const dark = matchMedia('(prefers-color-scheme: dark)');
+
+let renderer;
+try {
+  renderer = new WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'low-power' });
+} catch (e) { /* no WebGL: the page is complete without the background */ }
+
+if (renderer) {
+  // Past 1.5 the extra pixels cost fill rate and nobody can see the difference in soft dots.
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+
+  const scene = new Scene();
+  const camera = new PerspectiveCamera(50, 1, 0.1, 100);
+  camera.position.set(0, 3.2, 7);
+  camera.lookAt(0, 0, -1);
+
+  // Grid of points in the XZ plane. Positions never change on the CPU.
+  const COLS = 140, ROWS = 100, W = 22, D = 19.5;
+  const pos = new Float32Array(COLS * ROWS * 3);
+  for (let j = 0, k = 0; j < ROWS; j++) {
+    for (let i = 0; i < COLS; i++, k += 3) {
+      pos[k] = (i / (COLS - 1) - 0.5) * W;
+      pos[k + 1] = 0;
+      pos[k + 2] = (j / (ROWS - 1) - 0.5) * D - 2.25;
+    }
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(pos, 3));
+
+  const uniforms = {
+    uTime: { value: 0 },
+    uMouse: { value: new Vector2(0, -2) },   // in NDC; starts off screen
+    uColor: { value: new Color() },
+    uSize: { value: 0 },
+  };
+
+  const material = new ShaderMaterial({
+    uniforms,
+    transparent: true,
+    depthWrite: false,
+    vertexShader: /* glsl */`
+      uniform float uTime;
+      uniform vec2 uMouse;
+      uniform float uSize;
+      varying float vAlpha;
+      void main() {
+        vec3 p = position;
+        // Two crossing waves read as water; one alone reads as a sine plot.
+        float h = sin(p.x * 0.45 + uTime * 0.6) * 0.35
+                + sin(p.z * 0.7 - uTime * 0.45 + p.x * 0.2) * 0.25;
+
+        // Mouse ripple. Distance is measured on screen, from the undisplaced
+        // point, so no raycast is needed on the CPU.
+        vec4 base = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+        float d = distance(base.xy / base.w, uMouse);
+        h += exp(-d * d * 18.0) * 0.6 * sin(d * 22.0 - uTime * 4.0);
+
+        p.y = h;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = min(uSize * (1.0 + h * 0.6) / -mv.z, uSize * 0.3);
+        // Fade with distance, and toward the side edges so the field has no hard border.
+        // Brightest in the middle distance: near dots dim so they never fight the text.
+        vAlpha = smoothstep(22.0, 3.0, -mv.z) * (0.3 + 0.7 * smoothstep(3.0, 9.0, -mv.z)) * (1.0 - smoothstep(0.35, 0.5, abs(position.x / ${W.toFixed(1)})));
+      }`,
+    fragmentShader: /* glsl */`
+      uniform vec3 uColor;
+      varying float vAlpha;
+      void main() {
+        float r = length(gl_PointCoord - 0.5);
+        if (r > 0.5) discard;
+        gl_FragColor = vec4(uColor, vAlpha * smoothstep(0.5, 0.15, r) * 0.8);
+      }`,
+  });
+
+  scene.add(new Points(geometry, material));
+
+  // Dot colour follows the page's accent, so it is right in light and dark mode.
+  function syncColor() {
+    uniforms.uColor.value.set(getComputedStyle(document.documentElement).getPropertyValue('--accent').trim());
+  }
+  syncColor();
+  dark.addEventListener('change', () => { syncColor(); if (!running) renderer.render(scene, camera); });
+
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // Pull back on narrow screens so the field still fills the width.
+    camera.position.z = w < h ? 9.5 : 7;
+    camera.updateProjectionMatrix();
+    uniforms.uSize.value = 42 * renderer.getPixelRatio();
+    if (!running) renderer.render(scene, camera);
+  }
+
+  // The mouse target is eased toward, so the ripple glides instead of jumping.
+  const target = new Vector2(0, -2);
+  addEventListener('pointermove', (e) => {
+    target.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  }, { passive: true });
+
+  let running = false, last = 0, t = 0;
+  function frame(now) {
+    if (!running) return;
+    const dt = Math.min((now - last) / 1000, 0.05);  // clamp: a long pause must not jump the waves
+    last = now;
+    t += dt;
+    uniforms.uTime.value = t;
+    uniforms.uMouse.value.lerp(target, 1 - Math.pow(0.001, dt));
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  function start() {
+    if (running || reduceMotion.matches || document.hidden) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
+  function stop() { running = false; }
+
+  // Draw nothing while the tab is hidden; with reduced motion, draw one still frame.
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  reduceMotion.addEventListener('change', () => reduceMotion.matches ? (stop(), renderer.render(scene, camera)) : start());
+  addEventListener('resize', resize);
+
+  resize();
+  renderer.render(scene, camera);
+  canvas.classList.add('on');
+  start();
+}
 </script>
 </body>
 </html>
