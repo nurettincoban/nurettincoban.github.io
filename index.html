@@ -187,6 +187,7 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .track-meta { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
 .track p { margin: 0 0 6px; }
 .track a { font-size: 14px; }
+.track .track-links { margin: 0; font-size: 14px; color: var(--muted); }
 .player { grid-column: 1 / -1; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; }
 .player iframe { width: 100%; height: 100%; border: 0; display: block; }
 .track.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
@@ -326,6 +327,10 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 12a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Zm7.4 0c0 3.5-1.5 6.4-3.4 6.4s-3.4-2.9-3.4-6.4 1.5-6.4 3.4-6.4 3.4 2.9 3.4 6.4ZM24 12c0 3.2-.5 5.7-1.2 5.7s-1.2-2.6-1.2-5.7.5-5.7 1.2-5.7S24 8.8 24 12Z"/></svg>
       Medium
     </a>
+    <a href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0Zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02Zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.36.18.54.78.24 1.2Zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3Z"/></svg>
+      Spotify
+    </a>
     <!-- The address is assembled by script so it is not sitting in the HTML for scrapers. -->
     <a id="email" href="#" data-u="cobannurettin" data-d="gmail.com">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 5.809v6.441c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809Zm13-2.059H1.5v.44l6.5 3.79 6.5-3.790v-.44Z"/></svg>
@@ -352,10 +357,11 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
         <div class="track-title">Ad Astra</div>
         <div class="track-meta">NUO · Soundtype · 2023</div>
         <p class="desc">Debut single: deep bass, atmospheric pads and a synth line that climbs toward the stars. Play it and the galaxy moves with it.</p>
-        <a href="https://mixmag.com.tr/read/nuo-ad-astra-news">Featured in Mixmag Turkey →</a>
+        <p class="track-links"><a href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW">Listen on Spotify</a> · <a href="https://mixmag.com.tr/read/nuo-ad-astra-news">Featured in Mixmag Turkey →</a></p>
       </div>
       <div class="player" id="player-wrap" hidden><div id="player"></div></div>
     </div>
+    <a class="all" href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst">All tracks on Spotify →</a>
   </section>
 
   <section class="sec rise" style="--i:5">
