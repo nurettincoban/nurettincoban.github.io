@@ -45,10 +45,9 @@ a:hover { text-decoration: underline; }
 /* ---- the dock: fixed at the bottom right, the cue and sound button over a small
    player. On phones it is a strip along the bottom of the screen. */
 .dock {
-  position: fixed; right: 16px; bottom: 14px; z-index: 6; width: 300px;
+  position: fixed; right: 16px; bottom: 14px; z-index: 6; width: 430px;
   display: grid; gap: 4px; justify-items: end;
 }
-.dock.open { width: 380px; }       /* wide enough for YouTube's 200 px minimum player */
 .hud { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity 1s; }
 .hud.on { opacity: 1; }
 .cue { font-size: 12.5px; letter-spacing: .05em; color: var(--accent); transition: opacity 1.2s; }
@@ -154,22 +153,25 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .card p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 .all { display: inline-block; margin-top: 14px; font-size: 15px; }
 
-/* the Ad Astra player in the dock */
+/* the Ad Astra card in the dock: the full card on wide screens, a strip on phones */
 .mini {
-  width: 100%; display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 12px;
-  padding: 8px 10px 8px 8px; background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  width: 100%; display: grid; grid-template-columns: 120px 1fr; align-items: start; gap: 16px;
+  padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 14px;
   box-shadow: 0 10px 30px color-mix(in srgb, #000 22%, transparent);
 }
-.cover { position: relative; width: 52px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 9px; overflow: hidden; cursor: pointer; background: #000; }
+.cover { position: relative; width: 120px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: #000; }
 .cover img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.36); transition: transform .5s ease; display: block; }
 .cover:hover img { transform: scale(1.45); }
 .play-icon { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle, rgba(0,0,0,.1), rgba(0,0,0,.45)); }
-.play-icon svg { width: 22px; height: 22px; fill: #fff; filter: drop-shadow(0 1px 4px rgba(0,0,0,.5)); transition: transform .2s; }
+.play-icon svg { width: 38px; height: 38px; fill: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); transition: transform .2s; }
 .cover:hover .play-icon svg { transform: scale(1.12); }
-.mini-text { min-width: 0; line-height: 1.3; }
-.track-title { font-size: 15px; font-weight: 650; }
-.track-meta { color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-link { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.mini-text { min-width: 0; }
+.track-label { font-size: 11px; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+.track-title { font-size: 21px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+.track-meta { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+.mini .desc { margin: 0 0 6px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.track-links { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.mini-link { display: none; width: 36px; height: 36px; place-items: center; border-radius: 50%; color: var(--muted); }
 .mini-link:hover { color: var(--accent); }
 .mini-link svg { width: 18px; height: 18px; fill: currentColor; }
 .player { grid-column: 1 / -1; aspect-ratio: 16 / 9; min-height: 200px; border-radius: 9px; overflow: hidden; }
@@ -177,8 +179,15 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .mini.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
 @keyframes pulse { 0% { transform: scale(1.05); } 60%, 100% { transform: scale(1); } }
 @media (max-width: 999px) {
-  .dock, .dock.open { left: 10px; right: 10px; bottom: 10px; width: auto; }
+  .dock { left: 10px; right: 10px; bottom: 10px; width: auto; }
   main { padding-bottom: 180px; }
+  .mini { grid-template-columns: 52px 1fr auto; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; }
+  .cover { width: 52px; border-radius: 9px; }
+  .play-icon svg { width: 22px; height: 22px; }
+  .track-title { font-size: 15px; }
+  .track-meta { font-size: 12.5px; margin: 0; }
+  .track-label, .mini .desc, .track-links { display: none; }
+  .mini-link { display: grid; }
 }
 
 /* ---- experience: each company card plays a tiny scene of the work done there */
