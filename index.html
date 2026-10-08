@@ -667,11 +667,11 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 // let go), and a pulse with every note. The CPU sets a few uniforms a frame. It starts
 // as a big bang; escaping stars are reborn on the spiral arms.
 //
-// Drawing plays it. Notes snap to sixteenths at 122 bpm and to the chord underneath
-// (Am – F – C – G), so whatever you draw is in time and in key. Height is pitch;
-// where you draw is where the note sounds, in 3D around you (HRTF binaural audio,
-// best on headphones). Let go and the stroke loops four times, re-harmonised to the
-// chord it lands on, while its playhead pulls stars along the path you drew.
+// Drawing plays it. Notes snap to sixteenths at Ad Astra's 122 bpm and to its own
+// palette (C minor, read from the stems), so whatever you draw is in time, in key and
+// belongs to the track. Height is pitch; where you draw is where the note sounds, in
+// 3D around you (HRTF binaural audio, best on headphones). Let go and the stroke loops
+// four times while its playhead pulls stars along the path you drew.
 // Only the melody plays, through a small studio chain: hall reverb, ping-pong delay,
 // EQ, glue compression, saturation and a limiter.
 import {
@@ -690,15 +690,10 @@ const small = innerWidth < 700 || (navigator.hardwareConcurrency || 8) <= 4;
 
 // ===== music =================================================================
 const BPM = 122, S16 = 60 / BPM / 4;
-// Each chord lists the pitch classes a melody note may land on: chord tones plus the
-// pentatonic notes that sit well over it. Snapping to these is why nothing drawn can
-// sound wrong.
-const CHORDS = [
-  { name: 'Am', pcs: [9, 0, 2, 4, 7],  pad: [57, 60, 64, 69], root: 33 },
-  { name: 'F',  pcs: [5, 9, 0, 4, 7],  pad: [53, 57, 60, 64], root: 29 },
-  { name: 'C',  pcs: [0, 2, 4, 7, 9],  pad: [55, 60, 64, 67], root: 36 },
-  { name: 'G',  pcs: [7, 9, 11, 2, 4], pad: [55, 59, 62, 67], root: 31 },
-];
+// Ad Astra's palette, measured from its stems: a C pedal in the bass and a melody
+// that lives on C, D, E♭, F, G and B♭. Drawn notes snap to these pitch classes, which
+// is why nothing drawn can sound wrong, or foreign to the track.
+const SCALE = { name: 'C minor', pcs: [0, 2, 3, 5, 7, 10] };
 const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 function snap(pitch, chord) {
   let best = Math.round(pitch), bd = 1e9;
@@ -985,7 +980,7 @@ function boot() {
   geometry.setAttribute('ref', new BufferAttribute(ref, 2));
   const look = {
     tPos: { value: null }, tVel: { value: null },
-    uSize: { value: 1 }, uMaxSize: { value: 8 }, uIntro: { value: quiet ? 1 : 0 }, uLight: { value: 0 },
+    uSize: { value: 1 }, uMaxSize: { value: 8 }, uIntro: { value: quiet ? 1 : 0 }, uLight: { value: 0 }, uGlow: { value: 0 },
     uNear: { value: new Color() }, uFar: { value: new Color() }, uKick: sim.uKick,
   };
   const material = new ShaderMaterial({
@@ -993,7 +988,7 @@ function boot() {
     vertexShader: /* glsl */`
       attribute vec2 ref;
       uniform sampler2D tPos, tVel;
-      uniform float uSize, uMaxSize, uIntro, uKick;
+      uniform float uSize, uMaxSize, uIntro, uKick, uGlow;
       varying float vHeat, vA;
       void main() {
         vec3 p = texture2D(tPos, ref).xyz;
@@ -1005,7 +1000,7 @@ function boot() {
         // Capped: a few stars close to the camera would otherwise cost more pixels
         // than the other sixty thousand together.
         gl_PointSize = min(uSize * (0.7 + vHeat * 0.9 + uKick * 0.6) / -mv.z, uMaxSize);
-        vA = uIntro * (0.55 + 0.45 * vHeat + uKick * 0.25);
+        vA = uIntro * (0.55 + 0.45 * vHeat + uKick * 0.25) * (1.0 + uGlow * 0.6);
       }`,
     fragmentShader: /* glsl */`
       uniform vec3 uNear, uFar;
@@ -1094,7 +1089,6 @@ function boot() {
   const cue = (e) => { if (!reduceMotion.matches) vq.push(e); };
   let drawing = false, rec = null, cur = null, lastNote = null, livePos = null;
   const timeOfTick = (k) => t0 + k * S16;
-  const chordIndex = (k) => Math.floor(k / 16) % 4;
   const busy = () => drawing || phrases.length > 0;
   const hudBpm = $('hud-bpm');
 
@@ -1112,10 +1106,10 @@ function boot() {
     if (!busy() && tick > lastBusyTick + 32) { clearInterval(timer); timer = 0; cue({ t: nextTime, idle: true }); }
   }
   function playTick(k, t) {
-    const ci = chordIndex(k), chord = CHORDS[ci], s = studio;
+    const chord = SCALE, s = studio;
     if (busy()) {
       lastBusyTick = k;
-      if (k % 16 === 0) cue({ t, chord: ci });
+      if (k % 16 === 0) cue({ t, bar: 1 });
     }
 
     // While drawing: a note on each eighth the pointer has moved, and on the
@@ -1123,7 +1117,7 @@ function boot() {
     if (drawing && cur && livePos) {
       const dist = lastNote ? Math.hypot(cur.x - lastNote.x, cur.y - lastNote.y) : 60;
       if (k % 2 === 0 ? dist > 14 : dist > 70) {
-        const pitch = 57 + (1 - cur.y / innerHeight) * 27;       // A3 at the bottom, C6 at the top
+        const pitch = 55 + (1 - cur.y / innerHeight) * 29;       // G3 at the bottom, C6 at the top
         const vel = Math.min(0.5 + dist / 160, 1);
         const azm = (cur.x / innerWidth * 2 - 1) * 80, elv = (1 - cur.y / innerHeight) * 40 - 8;
         const ev = { tick: k, pitch, vel, az: azm, el: elv, pos: livePos.slice() };
@@ -1133,7 +1127,7 @@ function boot() {
         lastNote = { x: cur.x, y: cur.y };
       }
     }
-    // Looping strokes, quieter each time round, re-harmonised to the chord they land on.
+    // Looping strokes, quieter each time round.
     for (let i = phrases.length - 1; i >= 0; i--) {
       const ph = phrases[i], rel = k - ph.loopStart;
       if (rel < 0) continue;
@@ -1216,33 +1210,61 @@ function boot() {
   let seen = false;
   function howSeen() { if (!seen) { seen = true; setTimeout(() => { how.style.transition = 'opacity 1s'; how.style.opacity = 0.45; }, 4000); } }
 
-  // ---- Ad Astra. YouTube shares the playback position but never the audio, so the
-  // galaxy follows the video's own clock: beats from the track's tempo and first
-  // downbeat (pausing and seeking stay in sync), and, once TRACK.energy holds one
-  // value per bar from analysing the audio offline, its drops and breakdowns too.
-  const TRACK = { bpm: 122, offset: 0, energy: null };
-  let musicTime = null, anchorPos = 0, anchorAt = 0, reported = -1, musicBar = -1;
+  // ---- Ad Astra. YouTube shares the playback position but never the audio. So the
+  // track was analysed offline from its stems into ad-astra.json — kick and bass per
+  // beat; drums, pads and build-ups per bar; every melody note — and while the video
+  // plays, the galaxy performs that score against the video's own clock, so pausing
+  // and seeking stay in sync. The score is timed to the stem mix; the released edit is
+  // about 16 s shorter, and OFFSET is where to correct for it if the two drift apart.
+  const OFFSET = 0;
+  let score = null, musicTime = null, anchorPos = 0, anchorAt = 0, reported = -1;
+  let melIdx = 0, lastPos = -1, lastBar = -1;
   addEventListener('music', (e) => {
     musicPlaying = e.detail.playing;
     musicTime = e.detail.time || null;
     reported = -1;
     hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm';
+    // Fetched only once someone presses play: 18 KB nobody else downloads.
+    if (musicPlaying && !score) fetch('ad-astra.json').then((r) => (r.ok ? r.json() : null)).then((d) => { score = d; }).catch(() => {});
     setLevel();
   });
-  function trackKick(now) {
+  const digit = (str, i) => (i >= 0 && i < str.length ? str.charCodeAt(i) - 48 : 0) / 9;
+  function trackFrame(now) {
     if (!musicTime) return 0;
-    const pos = musicTime();
+    const at = musicTime();
     // The player reports its position a few times a second; run a clock between reports.
-    if (pos !== reported) { reported = pos; anchorPos = pos; anchorAt = now; }
-    const beats = (anchorPos + (now - anchorAt) - TRACK.offset) * TRACK.bpm / 60;
-    const bar = Math.floor(beats / 4);
-    const energy = TRACK.energy ? (TRACK.energy[bar] ?? 0.4) : 0.8;
-    if (TRACK.energy && bar !== musicBar) {
-      // A big jump in energy is a drop: the galaxy goes supernova with it.
-      if (musicBar >= 0 && energy - (TRACK.energy[bar - 1] ?? 0) > 0.35) shock([0, 0, 0], 1);
-      musicBar = bar;
+    if (at !== reported) { reported = at; anchorPos = at; anchorAt = now; }
+    const pos = anchorPos + (now - anchorAt) + OFFSET;
+    if (!score) {                                   // until the score arrives: a plain beat
+      const b = pos * BPM / 60;
+      return Math.exp(-(((b % 1) + 1) % 1) * 7) * 0.6;
     }
-    return Math.exp(-(((beats % 1) + 1) % 1) * 7) * energy;
+    const period = 60 / score.bpm, bf = (pos - score.beat0) / period;
+    const beat = Math.floor(bf), phase = bf - beat, bar = Math.floor(beat / 4);
+    // The kick on the beat, and the bass on the off-beat between kicks.
+    const kick = digit(score.kick, beat) * Math.exp(-phase * 7);
+    const bass = digit(score.bass, beat) * Math.exp(-((phase + 0.5) % 1) * 9) * 0.35;
+    // Build-ups and pads make the stars burn brighter.
+    look.uGlow.value += (digit(score.build, bar) * 0.8 + digit(score.pad, bar) * 0.25 - look.uGlow.value) * 0.05;
+    // The bar where the drums slam back in is a drop: the galaxy goes supernova.
+    if (bar !== lastBar) {
+      if (bar === lastBar + 1 && digit(score.drums, bar) - digit(score.drums, bar - 1) > 0.5) shock([0, 0, 0], 1);
+      lastBar = bar;
+    }
+    // Every melody note lights up its own place on the disk: the angle is its pitch
+    // class, the distance from the core its octave. The galaxy draws the tune.
+    const ms = pos * 1000, mel = score.melody;
+    if (pos < lastPos - 0.5 || pos > lastPos + 2) {  // a seek: find our place in the score
+      melIdx = 0;
+      while (melIdx < mel.length && mel[melIdx][0] < ms) melIdx++;
+    }
+    lastPos = pos;
+    while (melIdx < mel.length && mel[melIdx][0] <= ms) {
+      const n = mel[melIdx++], a = (n[1] % 12) / 12 * Math.PI * 2 + 0.3;
+      const r = 2 + Math.max(0, Math.min(1, (n[1] - 48) / 36)) * 7;
+      shock([Math.cos(a) * r, 0, Math.sin(a) * r], 0.08 + n[2] / 9 * 0.16);
+    }
+    return Math.min(1, kick + bass);
   }
 
   // ---- loop: fixed 60 Hz physics, drawn at the display's rate -------------
@@ -1274,13 +1296,14 @@ function boot() {
     while (vq.length && vq[0].t <= at) {
       const e = vq.shift();
       if (e.note) { shock(e.note, 0.06 + e.vel * 0.14); kickEnv = Math.max(kickEnv, e.vel * 0.45); }
-      else if (e.chord !== undefined) hudBpm.textContent = CHORDS[e.chord].name + ' · 122 bpm';
+      else if (e.bar) hudBpm.textContent = SCALE.name + ' · 122 bpm';
       else if (e.idle) hudBpm.textContent = '122 bpm';
     }
     if (pendingNova) { shock(pendingNova, 0.7); pendingNova = null; }
     kickEnv *= Math.exp(-dt * 8);
     let k = kickEnv * 0.8;
-    if (musicPlaying) k = Math.max(k, trackKick(now / 1000));
+    if (musicPlaying) k = Math.max(k, trackFrame(now / 1000));
+    else look.uGlow.value *= Math.exp(-dt * 2);
     sim.uKick.value = k;
 
     // Wells: the live stroke (or a gentle pull under a hovering mouse), then playheads.
