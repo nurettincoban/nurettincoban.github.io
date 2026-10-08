@@ -1,6 +1,8 @@
 # nurettincoban.github.io
 
-The personal site of Nurettin Çoban — software engineer, and music producer as NUO.
+The personal site of Nurettin Çoban — Senior Software Engineer in Helsinki: backend and
+distributed systems, EV charging platforms, and open-source tools for AI coding agents.
+Off the clock: house music as NUO.
 Live at **https://nurettincoban.github.io/**.
 
 The background is a galaxy simulated on the GPU. Draw in it and it plays *Ad Astra*:
