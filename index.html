@@ -188,6 +188,20 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .track p { margin: 0 0 6px; }
 .track a { font-size: 14px; }
 .track .track-links { margin: 0; font-size: 14px; color: var(--muted); }
+/* While the stars play Ad Astra, the card says so: it glows from inside (an inset
+   glow, so the card's paint containment cannot clip it), and a playing line appears. */
+.track { transition: box-shadow .5s, border-color .5s; }
+.track.in-stars {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent), inset 0 0 46px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.now { display: none; align-items: center; gap: 7px; margin: 0 0 6px; font-size: 12.5px; color: var(--accent); }
+.track.in-stars .now { display: flex; }
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.eq i { width: 2.5px; height: 4px; border-radius: 1px; background: currentColor; animation: eq .8s ease-in-out infinite; }
+.eq i:nth-child(2) { animation-delay: -.25s; } .eq i:nth-child(3) { animation-delay: -.5s; } .eq i:nth-child(4) { animation-delay: -.65s; }
+@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 11px; } }
+@media (prefers-reduced-motion: reduce) { .eq i { animation: none; height: 7px; } }
 .player { grid-column: 1 / -1; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; }
 .player iframe { width: 100%; height: 100%; border: 0; display: block; }
 .track.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
@@ -311,23 +325,23 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.969a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.06l1.97 1.969Z"/></svg>
       Download CV
     </a>
-    <a href="https://github.com/nurettincoban">
+    <a href="https://github.com/nurettincoban" target="_blank" rel="noopener">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.590c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.030-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
       GitHub
     </a>
-    <a href="https://www.linkedin.com/in/nurettincoban/">
+    <a href="https://www.linkedin.com/in/nurettincoban/" target="_blank" rel="noopener">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.6 0H2.4A2.4 2.4 0 0 0 0 2.4v11.2A2.4 2.4 0 0 0 2.4 16h11.2a2.4 2.4 0 0 0 2.4-2.4V2.4A2.4 2.4 0 0 0 13.6 0ZM4.9 13.4H2.6V6h2.3v7.4ZM3.7 5a1.3 1.3 0 1 1 0-2.7 1.3 1.3 0 0 1 0 2.7Zm9.7 8.4h-2.3V9.8c0-.9 0-2-1.2-2s-1.4.9-1.4 1.9v3.7H6.2V6h2.2v1h.1c.3-.6 1.1-1.2 2.2-1.2 2.4 0 2.8 1.6 2.8 3.6v4Z"/></svg>
       LinkedIn
     </a>
-    <a href="https://x.com/thenurettin">
+    <a href="https://x.com/thenurettin" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.2h3.7l-8 9.2L24 22.8h-7.4l-5.8-7.6-6.6 7.6H.5l8.6-9.8L0 1.2h7.6l5.2 6.9 6.1-6.9Zm-1.3 19.4h2L6.5 3.3H4.3l13.3 17.3Z"/></svg>
       X
     </a>
-    <a href="https://medium.com/@nurettinc">
+    <a href="https://medium.com/@nurettinc" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 12a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Zm7.4 0c0 3.5-1.5 6.4-3.4 6.4s-3.4-2.9-3.4-6.4 1.5-6.4 3.4-6.4 3.4 2.9 3.4 6.4ZM24 12c0 3.2-.5 5.7-1.2 5.7s-1.2-2.6-1.2-5.7.5-5.7 1.2-5.7S24 8.8 24 12Z"/></svg>
       Medium
     </a>
-    <a href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst">
+    <a href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0Zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02Zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.36.18.54.78.24 1.2Zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3Z"/></svg>
       Spotify
     </a>
@@ -356,12 +370,13 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       <div>
         <div class="track-title">Ad Astra</div>
         <div class="track-meta">NUO · Soundtype · 2023</div>
+        <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Playing in the stars, from this track</div>
         <p class="desc">Debut single: deep bass, atmospheric pads and a synth line that climbs toward the stars. Play it and the galaxy moves with it.</p>
-        <p class="track-links"><a href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW">Listen on Spotify</a> · <a href="https://mixmag.com.tr/read/nuo-ad-astra-news">Featured in Mixmag Turkey →</a></p>
+        <p class="track-links"><a href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW" target="_blank" rel="noopener">Listen on Spotify</a> · <a href="https://mixmag.com.tr/read/nuo-ad-astra-news" target="_blank" rel="noopener">Featured in Mixmag Turkey →</a></p>
       </div>
       <div class="player" id="player-wrap" hidden><div id="player"></div></div>
     </div>
-    <a class="all" href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst">All tracks on Spotify →</a>
+    <a class="all" href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst" target="_blank" rel="noopener">All tracks on Spotify →</a>
   </section>
 
   <section class="sec rise" style="--i:5">
@@ -372,16 +387,16 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
     <!-- Fallback when the GitHub API is unreachable or rate-limited.
          Otherwise this list is replaced by the live one, so it never needs editing. -->
     <div class="cards" id="projects">
-      <a class="card" data-repo="ai-prd-workflow" href="https://github.com/nurettincoban/ai-prd-workflow">
+      <a class="card" data-repo="ai-prd-workflow" href="https://github.com/nurettincoban/ai-prd-workflow" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="card-name">ai-prd-workflow</span></div>
         <p>RFC-driven development for AI coding agents: idea or existing codebase → verified PRD → features → rules → sequenced RFCs → reviewed code.</p>
       </a>
-      <a class="card" data-repo="diff2ai" href="https://github.com/nurettincoban/diff2ai">
+      <a class="card" data-repo="diff2ai" href="https://github.com/nurettincoban/diff2ai" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8M8 7h8M8 17h8"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span class="card-name">diff2ai</span></div>
         <p>Turn your Git diffs into high-signal AI code reviews — fast, local, and repo-safe.</p>
       </a>
     </div>
-    <a class="all" href="https://github.com/nurettincoban?tab=repositories">All repositories →</a>
+    <a class="all" href="https://github.com/nurettincoban?tab=repositories" target="_blank" rel="noopener">All repositories →</a>
   </section>
 
   <section class="sec rise" style="--i:6">
@@ -468,7 +483,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       <div><h2>Writing</h2><p class="sec-sub">Notes on building software with AI</p></div>
     </div>
     <div class="cards">
-      <a class="card" href="https://medium.com/@nurettinc/the-state-of-agentic-coding-transforming-software-development-with-ai-09c0447c254d">
+      <a class="card" href="https://medium.com/@nurettinc/the-state-of-agentic-coding-transforming-software-development-with-ai-09c0447c254d" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span class="card-name">The State of Agentic Coding: Transforming Software Development with AI</span></div>
         <p>On Medium</p>
       </a>
@@ -668,7 +683,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       shown.forEach(function (r) {
         var a = document.createElement('a');
         a.className = 'card';
-        a.href = r.html_url;
+        a.href = r.html_url; a.target = '_blank'; a.rel = 'noopener';
         var head = document.createElement('div'); head.className = 'card-head';
         head.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[r.name] || ICONS['']) + '</svg>';
         var n = document.createElement('span'); n.className = 'card-name'; n.textContent = r.name;
@@ -1190,10 +1205,10 @@ async function boot() {
     if (control) {
       quietSince = now;
       studio.steer((0.3 + 0.7 * control.v) * control.gain, 1, 1 - control.y, (control.x * 2 - 1) * 70, (1 - control.y) * 40 - 8);
-      if (hudBpm.dataset.s !== 'on') { hudBpm.dataset.s = 'on'; hudBpm.textContent = '♪ Ad Astra · melody + pad'; }
+      if (hudBpm.dataset.s !== 'on') { hudBpm.dataset.s = 'on'; hudBpm.textContent = '♪ Ad Astra · melody + pad'; trackCard.classList.add('in-stars'); }
     } else {
       studio.steer(0, 0, 0.4, 0, 0);
-      if (hudBpm.dataset.s !== 'off') { hudBpm.dataset.s = 'off'; hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm'; }
+      if (hudBpm.dataset.s !== 'off') { hudBpm.dataset.s = 'off'; hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm'; trackCard.classList.remove('in-stars'); }
       // Twelve quiet seconds: stop the loops and the timer; nothing runs until the next stroke.
       if (now - quietSince > 12) { studio.stop(); clearInterval(steerTimer); steerTimer = 0; }
     }
@@ -1306,6 +1321,27 @@ async function boot() {
     img.style.transition = 'opacity .3s'; img.style.opacity = '0';
     setTimeout(() => { img.style.transition = 'opacity 1.4s'; img.style.opacity = '1'; }, 2800);
   });
+  // On every melody note played from the stars, the sound visibly leaves the card:
+  // two sparks fly from the cover to the pen (or a replaying stroke's playhead), and
+  // the cover gives a small pulse.
+  const trackCard = document.getElementById('track'), coverBtn = document.getElementById('play');
+  const onScreen = new Vector3();
+  function toScreen(p) {
+    const v = onScreen.set(p[0], p[1], p[2]).project(camera), r = canvas.getBoundingClientRect();
+    return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height];
+  }
+  function noteFromCard(tx, ty, level) {
+    if (reduceMotion.matches) return;
+    const box = coverBtn.getBoundingClientRect();
+    if (box.bottom < 0 || box.top > innerHeight) return;               // the card is off screen
+    const t0 = performance.now();
+    for (let k = 0; k < 2; k++) {
+      launch({ x0: box.left + box.width * (0.3 + Math.random() * 0.4), y0: box.top + box.height * (0.3 + Math.random() * 0.4),
+               tx, ty, size: 2.6 + level * 1.6, t0, delay: k * 0.04, dur: 0.55 + Math.random() * 0.25,
+               bend: (Math.random() - 0.5) * 260, spin: 0 });
+    }
+    coverBtn.animate([{ transform: 'scale(1.045)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
+  }
   function coverSparks(count) {
     if (reduceMotion.matches || !coverImg) return;
     const box = coverImg.parentElement.getBoundingClientRect();
@@ -1320,7 +1356,7 @@ async function boot() {
   }
   function fxFrame(now) {
     fctx.clearRect(0, 0, fx.width, fx.height);
-    const [tx, ty] = coreOnScreen(), light = look.uLight.value > 0.5;
+    const [cx, cy] = coreOnScreen(), light = look.uLight.value > 0.5;
     const accent = '#' + look.uNear.value.getHexString();
     fctx.globalCompositeOperation = light ? 'source-over' : 'lighter';
     fctx.fillStyle = accent;
@@ -1332,6 +1368,7 @@ async function boot() {
       }
       const u = Math.min(t / sp.dur, 1), e = ease(u);
       // A quadratic curve whose control point sits off to one side: every piece arcs.
+      const tx = sp.tx === undefined ? cx : sp.tx, ty = sp.tx === undefined ? cy : sp.ty;
       const mx = (sp.x0 + tx) / 2 + sp.bend * 0.5, my = (sp.y0 + ty) / 2 - Math.abs(sp.bend) * 0.35;
       const x = (1 - e) * (1 - e) * sp.x0 + 2 * (1 - e) * e * mx + e * e * tx;
       const y = (1 - e) * (1 - e) * sp.y0 + 2 * (1 - e) * e * my + e * e * ty;
@@ -1393,6 +1430,8 @@ async function boot() {
         for (const n of loopNotes) {
           if (wrap ? (n.t > lastLoopPos || n.t <= pos) : (n.t > lastLoopPos && n.t <= pos)) {
             shock(control.p, (0.05 + n.vel * 0.12) * level);
+            const [px, py] = drawing && cur ? [cur.x, cur.y] : toScreen(control.p);
+            noteFromCard(px, py, level);
             kickEnv = Math.max(kickEnv, 0.4 * level);
           }
         }
