@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nurettin Çoban</title>
-<meta name="description" content="Nurettin Çoban builds products by day and makes melodic techno as NUO by night.">
+<meta name="description" content="Nurettin Çoban builds products by day and makes melodic techno as NUO by night. Draw on the sand and it plays what you draw.">
 <link rel="canonical" href="https://nurettincoban.github.io/">
 <meta property="og:title" content="Nurettin Çoban">
 <meta property="og:description" content="Builds products by day, makes melodic techno as NUO by night.">
@@ -50,33 +50,42 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 ::selection { background: var(--accent); color: var(--bg); }
 
-/* ---- layout: the plate on top on phones; beside the text, and sticky, on wide screens */
-.page { max-width: 1280px; margin: 0 auto; }
-.plate-col { display: flex; flex-direction: column; align-items: center; padding: 72px 16px 0; }
-.plate-col.off { display: none; }
-.plate { position: relative; width: min(100%, 400px); aspect-ratio: 1; }
-#plate { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: pan-y; opacity: 0; transition: opacity 1.2s ease; }
-#plate.on { opacity: 1; }
-.plate-ui {
-  width: min(100%, 400px); margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  font-size: 12px; color: var(--muted); letter-spacing: .02em;
+/* ---- the sand: a band at the top on phones, the whole background on wide screens */
+.stage {
+  position: absolute; top: 0; left: 0; right: 0; height: 56vh; z-index: 0;
+  cursor: crosshair; touch-action: none; user-select: none; -webkit-user-select: none;
 }
-.plate-ui b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.stage.off { display: none; }
+#sand { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.4s ease; }
+#sand.on { opacity: 1; }
+.stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 62%, var(--bg)); }
+.caption { position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 1; font-size: 12px; line-height: 1.7; color: var(--muted); letter-spacing: .02em; }
+.caption .cue { color: var(--text); font-size: 13px; }
+.caption b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 .sound {
-  font: inherit; color: var(--text); background: none; cursor: pointer; white-space: nowrap;
-  border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px;
+  font: inherit; color: var(--text); background: var(--bg); cursor: pointer;
+  border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; margin-left: 4px;
 }
 .sound:hover { border-color: var(--muted); }
 .sound[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-.plate-note { width: min(100%, 400px); margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.veil { display: none; }
 
-main { max-width: 600px; margin: 0 auto; padding: 56px 16px 120px; }
+/* The text sits above the sand but lets the pointer through its empty space,
+   so you can draw between paragraphs and still select the words. */
+main { position: relative; z-index: 2; pointer-events: none; max-width: 600px; margin: 0 auto; padding: calc(56vh + 8px) 16px 120px; }
+main :is(a, button, p, h1, h2, li, img, .track, iframe, footer, .meta) { pointer-events: auto; }
+body.nosand main { padding-top: 88px; }
 
 @media (min-width: 1000px) {
-  .page { display: grid; grid-template-columns: minmax(0, 540px) minmax(0, 1fr); column-gap: 6vw; padding: 0 6vw; }
-  main { grid-column: 1; grid-row: 1; margin: 0; padding: 120px 0 140px; }
-  .plate-col { grid-column: 2; grid-row: 1; align-self: start; position: sticky; top: 0; height: 100vh; justify-content: center; padding: 0; }
-  .plate, .plate-ui, .plate-note { width: min(100%, 74vh, 640px); }
+  .stage { position: fixed; inset: 0; height: auto; }
+  .stage::after { display: none; }
+  /* Fade the sand out under the text column, so it reads like a page and not a poster. */
+  .veil {
+    display: block; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, var(--bg) 0, color-mix(in srgb, var(--bg) 92%, transparent) 34%, color-mix(in srgb, var(--bg) 60%, transparent) 50%, transparent 66%);
+  }
+  main { margin: 0 0 0 7vw; max-width: 540px; padding: 120px 0 140px; }
+  .caption { left: auto; right: 28px; bottom: 24px; text-align: right; }
 }
 
 /* ---- theme switch: the new theme spreads from the button as a circle */
@@ -108,7 +117,7 @@ h1 { font-size: clamp(30px, 5.6vw, 40px); line-height: 1.1; letter-spacing: -.03
 .links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 72px; }
 .links a, .links button {
   display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px;
-  border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: none;
+  border: 1px solid var(--border); border-radius: 999px; color: var(--text); background: var(--bg);
   font: inherit; font-size: 15px; cursor: pointer;
 }
 .links a:hover, .links button:hover { border-color: var(--text); text-decoration: none; }
@@ -150,119 +159,117 @@ a.row:hover .row-name { color: var(--accent); }
 footer { margin-top: 80px; color: var(--muted); font-size: 13px; }
 
 @media (prefers-reduced-motion: reduce) {
-  #plate { transition: none; }
+  #sand { transition: none; }
   .track.playing .cover { animation: none; }
 }
 </style>
 </head>
 <body>
 
+<div class="stage" id="stage">
+  <canvas id="sand" aria-label="Sand on a vibrating plate. Draw on it and it plays what you draw."></canvas>
+  <div class="caption mono">
+    <div class="cue">Draw on the sand — it plays what you draw.</div>
+    <div><b id="ui-chord">Am</b> · 122 bpm · <b id="ui-grains">—</b> grains · <b id="ui-fps">—</b> fps<button class="sound" id="sound" type="button" aria-pressed="true">♪ on</button></div>
+  </div>
+</div>
+<div class="veil" aria-hidden="true"></div>
+
 <button class="theme" id="theme" type="button" aria-label="Toggle dark mode">
   <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
   <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
 </button>
 
-<div class="page">
-  <div class="plate-col">
-    <div class="plate"><canvas id="plate" aria-label="A simulated Chladni plate: sand settling into the pattern of a note. Click for a new note."></canvas></div>
-    <div class="plate-ui mono">
-      <span>mode <b id="ui-mode">—</b> · note <b id="ui-note">—</b> · <b id="ui-fps">—</b> fps</span>
-      <button class="sound" id="sound" type="button" aria-pressed="false">♪ sound off</button>
+<main>
+  <div class="me">
+    <img src="https://github.com/nurettincoban.png?size=128" alt="" width="64" height="64">
+    <div>
+      <h1>Nurettin Çoban</h1>
+      <p class="meta">Senior Software Engineer · a.k.a. NUO · Helsinki</p>
     </div>
-    <p class="plate-note">A Chladni plate. Sand bounces wherever the plate vibrates and comes to rest on the lines that stand still, so every note draws its own figure. <span id="ui-grains">—</span> grains, simulated on your GPU. Click for a new note; move across it to brush the sand.</p>
   </div>
 
-  <main>
-    <div class="me">
-      <img src="https://github.com/nurettincoban.png?size=128" alt="" width="64" height="64">
-      <div>
-        <h1>Nurettin Çoban</h1>
-        <p class="meta">Senior Software Engineer · a.k.a. NUO · Helsinki</p>
-      </div>
-    </div>
+  <p class="bio">I build products by day, and make melodic techno as <em>NUO</em> by night.</p>
+  <p class="lede">12+ years of backend and distributed systems. At Virta I build the EV charging platform behind thousands of stations across Europe — OCPP, OCPI, ISO 15118 Plug &amp; Charge. Outside work, I help AI coding agents build the right thing, not just build things fast.</p>
 
-    <p class="bio">I build products by day, and make melodic techno as <em>NUO</em> by night.</p>
-    <p class="lede">12+ years of backend and distributed systems. At Virta I build the EV charging platform behind thousands of stations across Europe — OCPP, OCPI, ISO 15118 Plug &amp; Charge. Outside work, I help AI coding agents build the right thing, not just build things fast.</p>
+  <div class="links">
+    <a class="cv" href="cv.pdf" download="Nurettin-Coban-CV.pdf">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.969a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.06l1.97 1.969Z"/></svg>
+      Download CV
+    </a>
+    <a href="https://github.com/nurettincoban">GitHub</a>
+    <a href="https://www.linkedin.com/in/nurettincoban/">LinkedIn</a>
+    <a href="https://x.com/thenurettin">X</a>
+    <a href="https://medium.com/@nurettinc">Medium</a>
+    <!-- The address is assembled by script so it is not sitting in the HTML for scrapers. -->
+    <a id="email" href="#" data-u="cobannurettin" data-d="gmail.com">Email</a>
+    <button id="copy" type="button" aria-label="Copy email address" title="Copy email address">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Zm5-5C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>
+      <span hidden></span>
+    </button>
+    <noscript><span class="meta">cobannurettin [at] gmail [dot] com</span></noscript>
+  </div>
 
-    <div class="links">
-      <a class="cv" href="cv.pdf" download="Nurettin-Coban-CV.pdf">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.969a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.06l1.97 1.969Z"/></svg>
-        Download CV
-      </a>
-      <a href="https://github.com/nurettincoban">GitHub</a>
-      <a href="https://www.linkedin.com/in/nurettincoban/">LinkedIn</a>
-      <a href="https://x.com/thenurettin">X</a>
-      <a href="https://medium.com/@nurettinc">Medium</a>
-      <!-- The address is assembled by script so it is not sitting in the HTML for scrapers. -->
-      <a id="email" href="#" data-u="cobannurettin" data-d="gmail.com">Email</a>
-      <button id="copy" type="button" aria-label="Copy email address" title="Copy email address">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Zm5-5C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>
-        <span hidden></span>
+  <section>
+    <h2>Music</h2>
+    <div class="track" id="track">
+      <button class="cover" id="play" type="button" aria-label="Play Ad Astra by NUO">
+        <img src="https://i.ytimg.com/vi/5mYk19IsFmE/hqdefault.jpg" alt="" width="480" height="360">
+        <span class="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
       </button>
-      <noscript><span class="meta">cobannurettin [at] gmail [dot] com</span></noscript>
+      <div>
+        <div class="track-title">Ad Astra</div>
+        <div class="track-meta">NUO · Soundtype · 2023</div>
+        <p class="desc">Debut single: deep bass, atmospheric pads, a synth line that climbs toward the stars. Play it and the sand dances to it.</p>
+        <a href="https://mixmag.com.tr/read/nuo-ad-astra-news">Featured in Mixmag Turkey →</a>
+      </div>
+      <div class="player" id="player-wrap" hidden><div id="player"></div></div>
     </div>
+  </section>
 
-    <section>
-      <h2>Music</h2>
-      <div class="track" id="track">
-        <button class="cover" id="play" type="button" aria-label="Play Ad Astra by NUO">
-          <img src="https://i.ytimg.com/vi/5mYk19IsFmE/hqdefault.jpg" alt="" width="480" height="360">
-          <span class="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
-        </button>
-        <div>
-          <div class="track-title">Ad Astra</div>
-          <div class="track-meta">NUO · Soundtype · 2023</div>
-          <p class="desc">Debut single: deep bass, atmospheric pads, a synth line that climbs toward the stars. Play it and the plate dances to it.</p>
-          <a href="https://mixmag.com.tr/read/nuo-ad-astra-news">Featured in Mixmag Turkey →</a>
-        </div>
-        <div class="player" id="player-wrap" hidden><div id="player"></div></div>
-      </div>
-    </section>
+  <section>
+    <h2>Projects</h2>
+    <!-- Fallback when the GitHub API is unreachable or rate-limited.
+         Otherwise this list is replaced by the live one, so it never needs editing. -->
+    <div class="list" id="projects">
+      <a class="row" href="https://github.com/nurettincoban/ai-prd-workflow">
+        <div class="row-head"><span class="row-name">ai-prd-workflow</span></div>
+        <p>RFC-driven development for AI coding agents: idea or existing codebase → verified PRD → features → rules → sequenced RFCs → reviewed code.</p>
+      </a>
+      <a class="row" href="https://github.com/nurettincoban/diff2ai">
+        <div class="row-head"><span class="row-name">diff2ai</span></div>
+        <p>Turn your Git diffs into high-signal AI code review prompts — fast, local, and repo-safe.</p>
+      </a>
+    </div>
+    <a class="all" href="https://github.com/nurettincoban?tab=repositories">All repositories →</a>
+  </section>
 
-    <section>
-      <h2>Projects</h2>
-      <!-- Fallback when the GitHub API is unreachable or rate-limited.
-           Otherwise this list is replaced by the live one, so it never needs editing. -->
-      <div class="list" id="projects">
-        <a class="row" href="https://github.com/nurettincoban/ai-prd-workflow">
-          <div class="row-head"><span class="row-name">ai-prd-workflow</span></div>
-          <p>RFC-driven development for AI coding agents: idea or existing codebase → verified PRD → features → rules → sequenced RFCs → reviewed code.</p>
-        </a>
-        <a class="row" href="https://github.com/nurettincoban/diff2ai">
-          <div class="row-head"><span class="row-name">diff2ai</span></div>
-          <p>Turn your Git diffs into high-signal AI code review prompts — fast, local, and repo-safe.</p>
-        </a>
-      </div>
-      <a class="all" href="https://github.com/nurettincoban?tab=repositories">All repositories →</a>
-    </section>
+  <section>
+    <h2>Experience</h2>
+    <ol class="list">
+      <li class="row"><div class="row-head"><span class="row-name">Virta</span><span class="row-side mono">2020 —</span></div>
+        <p>Senior Software Engineer. Tech Lead &amp; Interim Engineering Team Lead 2024–26: ISO 15118 Plug &amp; Charge end to end, card payment terminals on chargers.</p></li>
+      <li class="row"><div class="row-head"><span class="row-name">Devolon</span><span class="row-side mono">2018 — 20</span></div>
+        <p>Software Engineer, Estonia. Led the ordering platform for a Finnish restaurant chain.</p></li>
+      <li class="row"><div class="row-head"><span class="row-name">Safee Fleet Management</span><span class="row-side mono">2017 — 18</span></div>
+        <p>Software Engineer. Real-time map dashboards for 10,000+ vehicles.</p></li>
+      <li class="row"><div class="row-head"><span class="row-name">Metanet Group</span><span class="row-side mono">2013 — 16</span></div>
+        <p>Software Engineer, Gaziantep. Started straight out of a high school internship.</p></li>
+    </ol>
+  </section>
 
-    <section>
-      <h2>Experience</h2>
-      <ol class="list">
-        <li class="row"><div class="row-head"><span class="row-name">Virta</span><span class="row-side mono">2020 —</span></div>
-          <p>Senior Software Engineer. Tech Lead &amp; Interim Engineering Team Lead 2024–26: ISO 15118 Plug &amp; Charge end to end, card payment terminals on chargers.</p></li>
-        <li class="row"><div class="row-head"><span class="row-name">Devolon</span><span class="row-side mono">2018 — 20</span></div>
-          <p>Software Engineer, Tallinn. Led the ordering platform for a Finnish restaurant chain.</p></li>
-        <li class="row"><div class="row-head"><span class="row-name">Safee Fleet Management</span><span class="row-side mono">2017 — 18</span></div>
-          <p>Software Engineer. Real-time map dashboards for 10,000+ vehicles.</p></li>
-        <li class="row"><div class="row-head"><span class="row-name">Metanet Group</span><span class="row-side mono">2013 — 16</span></div>
-          <p>Software Engineer, Gaziantep. Started straight out of a high school internship.</p></li>
-      </ol>
-    </section>
+  <section>
+    <h2>Writing</h2>
+    <div class="list">
+      <a class="row" href="https://medium.com/@nurettinc/the-state-of-agentic-coding-transforming-software-development-with-ai-09c0447c254d">
+        <div class="row-head"><span class="row-name">The State of Agentic Coding: Transforming Software Development with AI</span></div>
+        <p>Medium</p>
+      </a>
+    </div>
+  </section>
 
-    <section>
-      <h2>Writing</h2>
-      <div class="list">
-        <a class="row" href="https://medium.com/@nurettinc/the-state-of-agentic-coding-transforming-software-development-with-ai-09c0447c254d">
-          <div class="row-head"><span class="row-name">The State of Agentic Coding: Transforming Software Development with AI</span></div>
-          <p>Medium</p>
-        </a>
-      </div>
-    </section>
-
-    <footer>© <span id="year">2026</span> Nurettin Çoban</footer>
-  </main>
-</div>
+  <footer>© <span id="year">2026</span> Nurettin Çoban</footer>
+</main>
 
 <script>
 (function () {
@@ -306,7 +313,7 @@ footer { margin-top: 80px; color: var(--muted); font-size: 13px; }
   });
 
   // ---- music: the YouTube player loads only when asked for, and tells the
-  // plate whether the track is playing so it can change figure with the bars.
+  // sand whether the track is playing so it can move with the bars.
   var playBtn = document.getElementById('play');
   var track = document.getElementById('track');
   playBtn.addEventListener('click', function () {
@@ -366,100 +373,137 @@ footer { margin-top: 80px; color: var(--muted); font-size: 13px; }
 </script>
 
 <script type="module">
-// A Chladni plate. A square plate vibrating in mode (n, m) has the standing wave
+// Sand on a vibrating plate, and a sequencer you play by drawing in it.
+//
+// The plate. A plate vibrating in mode (n, m) has the standing wave
 //   f(x, y) = cos(nπx)·cos(mπy) ± cos(mπx)·cos(nπy)
-// Sand on it gets bounced in a random direction, as hard as the plate moves under it,
-// so it drifts off the moving parts and comes to rest on the nodal lines, where f = 0.
-// That is the whole simulation: every grain's position lives in a float texture and
-// one fragment shader steps all of them at once. Rendering writes clip-space
-// positions directly — no camera, no matrices — one draw call.
+// Each grain is bounced in a random direction, as hard as the plate moves under it,
+// so the sand leaves the moving parts and rests on the nodal lines where f = 0.
+// Every grain's position lives in a float texture; one fragment shader steps them
+// all, and a second pass draws them straight to clip space. A finger drawn through
+// the sand pushes it aside, so a stroke leaves a real groove.
+//
+// The music. Notes snap to sixteenths at 122 bpm and to the chord underneath
+// (Am – F – C – G), so whatever you draw is in time and in key. Height is pitch,
+// left to right is stereo, speed is velocity. Let go and the stroke loops four
+// times, re-harmonised to whichever chord it lands on, while it redraws itself in
+// the sand. A pad, a soft kick and a hat play under it only while something is
+// playing, and the pad ducks under the kick.
 import {
   WebGLRenderer, Scene, OrthographicCamera, BufferGeometry, BufferAttribute,
-  ShaderMaterial, Points, Color, Vector2, AdditiveBlending, NormalBlending
+  ShaderMaterial, Points, Color, Vector4, AdditiveBlending, NormalBlending
 } from 'three';
 import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 
-const canvas = document.getElementById('plate');
-const col = document.querySelector('.plate-col');
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('sand');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const $ = (id) => document.getElementById(id);
 
-// (n, m, ±) modes that draw well. With the minus sign, n must differ from m or the
-// two terms cancel and the plate has no figure at all; the minus sign also always
-// draws both diagonals, so half the modes use the plus sign for variety.
-// Each mode also has a note, from the sum n + m.
+// (n, m, ±) plate modes that draw well. With the minus sign n must differ from m,
+// or the two terms cancel and the plate has no figure at all.
 const MODES = [[1,4,-1],[2,3,1],[2,5,-1],[3,4,1],[1,6,-1],[3,5,1],[2,7,1],[4,5,-1],
                [3,7,-1],[1,8,1],[4,7,1],[5,6,-1],[2,9,-1],[5,8,1],[6,7,-1],[1,5,1],[3,6,1]];
-// A minor pentatonic from A2 to A4: the sound of melodic techno, and never a wrong note.
-const SCALE = [['A2',0],['C3',3],['D3',5],['E3',7],['G3',10],['A3',12],['C4',15],['D4',17],['E4',19],['G4',22],['A4',24]];
-const noteOf = ([n, m]) => SCALE[Math.min(Math.max(n + m - 5, 0), SCALE.length - 1)];
 
-function off() { col.classList.add('off'); }
+const BPM = 122, S16 = 60 / BPM / 4;
+// Each chord lists the pitch classes a melody note may land on: chord tones plus
+// the pentatonic notes that sit well over it. Snapping to these is why nothing
+// drawn can sound wrong.
+const CHORDS = [
+  { name: 'Am', pcs: [9, 0, 2, 4, 7],  pad: [57, 60, 64, 69], bass: 45 },
+  { name: 'F',  pcs: [5, 9, 0, 4, 7],  pad: [53, 57, 60, 64], bass: 41 },
+  { name: 'C',  pcs: [0, 2, 4, 7, 9],  pad: [55, 60, 64, 67], bass: 48 },
+  { name: 'G',  pcs: [7, 9, 11, 2, 4], pad: [55, 59, 62, 67], bass: 43 },
+];
+const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+function snap(pitch, chord) {
+  let best = Math.round(pitch), bd = 1e9;
+  for (let m = Math.floor(pitch) - 3; m <= Math.ceil(pitch) + 3; m++) {
+    if (!chord.pcs.includes(((m % 12) + 12) % 12)) continue;
+    const d = Math.abs(m - pitch);
+    if (d < bd) { bd = d; best = m; }
+  }
+  return best;
+}
 
 function boot() {
   let renderer;
   try {
     renderer = new WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  } catch (e) { return off(); }   // no WebGL: the page is complete without the plate
-  if (!renderer.capabilities.isWebGL2) return off();
-  // The canvas is small, so full device resolution is affordable and keeps grains crisp.
-  let dpr = Math.min(devicePixelRatio, 2);
+  } catch (e) { renderer = null; }
+  if (!renderer || !renderer.capabilities.isWebGL2) {
+    // No WebGL2: the page is complete without the sand.
+    stage.classList.add('off'); document.body.classList.add('nosand'); return;
+  }
+  let dpr = Math.min(devicePixelRatio, 1.5);
   renderer.setPixelRatio(dpr);
 
   const small = innerWidth < 700 || (navigator.hardwareConcurrency || 8) <= 4;
   const SIZE = small ? 160 : 256, N = SIZE * SIZE;
   $('ui-grains').textContent = N.toLocaleString('en');
+  let aspect = Math.max(stage.clientWidth, 1) / Math.max(stage.clientHeight, 1);
 
   // ---- simulation ---------------------------------------------------------
+  // Four brushes: the live pointer, and the playheads of up to three looping strokes.
+  // Each is a segment (from where it was last step to where it is now), so a fast
+  // stroke carves a continuous groove instead of a dotted one.
   const sim = {
     uTime: { value: 0 },
     uN: { value: 3 }, uM: { value: 5 }, uSign: { value: 1 },
-    uKick: { value: 0 },                          // 0..1, a beat of the music
-    uPointer: { value: new Vector2(9, 9) },       // plate coordinates, -1..1
-    uBrush: { value: 0 },
+    uKick: { value: 0 },
+    uZoom: { value: 0.8 },
+    uAspect: { value: aspect },
+    uSeg: { value: [0, 1, 2, 3].map(() => new Vector4(9, 9, 9, 9)) },
+    uStr: { value: [0, 0, 0, 0] },
   };
   const gpu = new GPUComputationRenderer(SIZE, SIZE, renderer);
   const pos0 = gpu.createTexture();
   for (let i = 0, d = pos0.image.data; i < N; i++) {
-    d[i * 4] = Math.random() * 2 - 1;
+    d[i * 4] = (Math.random() * 2 - 1) * aspect;
     d[i * 4 + 1] = Math.random() * 2 - 1;
     d[i * 4 + 3] = 1;
   }
   const grains = gpu.addVariable('texturePosition', /* glsl */`
-    uniform float uTime, uN, uM, uSign, uKick, uBrush;
-    uniform vec2 uPointer;
+    uniform float uTime, uN, uM, uSign, uKick, uZoom, uAspect;
+    uniform vec4 uSeg[4];
+    uniform float uStr[4];
     #define PI 3.14159265
     float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     void main() {
       vec2 uv = gl_FragCoord.xy / resolution.xy;
       vec2 p = texture2D(texturePosition, uv).xy;
+      vec2 q = p * uZoom;
       float n = uN * PI, m = uM * PI;
-      float f = cos(n * p.x) * cos(m * p.y) + uSign * cos(m * p.x) * cos(n * p.y);
-      vec2 grad = vec2(-n * sin(n * p.x) * cos(m * p.y) - uSign * m * sin(m * p.x) * cos(n * p.y),
-                       -m * cos(n * p.x) * sin(m * p.y) - uSign * n * cos(m * p.x) * sin(n * p.y));
+      float f = cos(n * q.x) * cos(m * q.y) + uSign * cos(m * q.x) * cos(n * q.y);
+      vec2 grad = vec2(-n * sin(n * q.x) * cos(m * q.y) - uSign * m * sin(m * q.x) * cos(n * q.y),
+                       -m * cos(n * q.x) * sin(m * q.y) - uSign * n * cos(m * q.x) * sin(n * q.y));
       float a = abs(f);
 
-      // The plate throws each grain in a random direction, as hard as it moves there.
-      // A kick drum throws everything harder.
+      // The plate throws each grain in a random direction, as hard as it moves there;
+      // every note and kick throws harder. The small constant is the grain's own
+      // roughness, which keeps the lines sandy instead of drawn with a ruler.
       float t = fract(uTime * 0.37) * 10.0;
       vec2 r = vec2(hash(uv + t), hash(uv * 1.37 + t + 4.1)) * 2.0 - 1.0;
-      // The small constant term is the grain's own roughness: it keeps the lines sandy
-      // instead of drawn with a ruler.
       p += r * (a * 0.01 * (1.0 + uKick * 2.5) + 0.0005);
-      // Grains also slide downhill toward the still lines; without this they would
-      // get there, but slowly enough to look like noise for the first seconds.
+      // Grains also slide downhill toward the still lines, so a figure forms in
+      // about two seconds instead of looking like noise for the first ten.
       p -= sign(f) * grad / max(n, m) * a * 0.007;
 
-      // A finger on the plate pushes the sand aside.
-      vec2 d = p - uPointer;
-      float dl = length(d) + 1e-4;
-      p += d / dl * exp(-dl * dl / 0.004) * 0.016 * uBrush;
+      // Fingers and playheads push the sand aside.
+      for (int i = 0; i < 4; i++) {
+        if (uStr[i] <= 0.0) continue;
+        vec2 sa = uSeg[i].xy, ab = uSeg[i].zw - sa;
+        float h = clamp(dot(p - sa, ab) / max(dot(ab, ab), 1e-6), 0.0, 1.0);
+        vec2 d = p - (sa + ab * h);
+        float dl = length(d) + 1e-4;
+        p += d / dl * exp(-dl * dl / 0.0011) * 0.014 * uStr[i];
+      }
 
-      gl_FragColor = vec4(clamp(p, -1.0, 1.0), a, 1.0);
+      gl_FragColor = vec4(clamp(p, vec2(-uAspect, -1.0), vec2(uAspect, 1.0)), a, 1.0);
     }`, pos0);
   gpu.setVariableDependencies(grains, [grains]);
   Object.assign(grains.material.uniforms, sim);
-  if (gpu.init() !== null) return off();   // float render targets unsupported
+  if (gpu.init() !== null) { stage.classList.add('off'); document.body.classList.add('nosand'); return; }
 
   // ---- rendering ----------------------------------------------------------
   const ref = new Float32Array(N * 2);
@@ -469,18 +513,18 @@ function boot() {
   geometry.setAttribute('ref', new BufferAttribute(ref, 2));
   const look = {
     tPos: { value: null }, uSize: { value: 1 }, uFade: { value: 0 }, uLight: { value: 0 },
-    uGrain: { value: new Color() }, uAccent: { value: new Color() },
+    uAspect: sim.uAspect, uGrain: { value: new Color() }, uAccent: { value: new Color() },
   };
   const material = new ShaderMaterial({
     uniforms: look, transparent: true, depthWrite: false, blending: AdditiveBlending,
     vertexShader: /* glsl */`
       attribute vec2 ref;
       uniform sampler2D tPos;
-      uniform float uSize;
+      uniform float uSize, uAspect;
       varying float vMove;
       void main() {
         vec4 g = texture2D(tPos, ref);
-        gl_Position = vec4(g.xy * 0.97, 0.0, 1.0);
+        gl_Position = vec4(g.x / uAspect, g.y, 0.0, 1.0);
         gl_PointSize = uSize;
         vMove = smoothstep(0.03, 0.6, g.z);   // how hard the plate is shaking this grain
       }`,
@@ -489,10 +533,9 @@ function boot() {
       uniform float uFade, uLight;
       varying float vMove;
       void main() {
-        // Settled sand in the ink colour; sand still in flight glows in the accent.
+        // Settled sand in the ink colour; sand in flight glows in the accent.
         vec3 c = mix(uGrain, uAccent, vMove);
-        float a = mix(mix(0.5, 0.3, uLight), 0.3, vMove) * uFade;
-        gl_FragColor = vec4(c, a);
+        gl_FragColor = vec4(c, mix(mix(0.5, 0.32, uLight), 0.3, vMove) * uFade);
       }`,
   });
   const points = new Points(geometry, material);
@@ -505,7 +548,6 @@ function boot() {
     look.tPos.value = gpu.getCurrentRenderTarget(grains).texture;
     renderer.render(scene, camera);
   }
-
   // Colours come from the page's CSS. Light adds up on a dark page; on a light page
   // it would vanish into white, so grains are painted normally there, like ink.
   function syncTheme() {
@@ -520,123 +562,345 @@ function boot() {
   addEventListener('themechange', () => { syncTheme(); draw(); });
 
   function resize() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
-    look.uSize.value = (small ? 1.6 : 1.25) * renderer.getPixelRatio();
+    aspect = w / h;
+    sim.uAspect.value = aspect;
+    look.uSize.value = (small ? 1.7 : 1.4) * renderer.getPixelRatio();
     draw();
   }
-  new ResizeObserver(resize).observe(canvas);
+  new ResizeObserver(resize).observe(stage);
 
-  // ---- sound: off until asked for; each new figure then plays its note ----
-  let audio = null, out = null, soundOn = false, musicPlaying = false;
-  function initAudio() {
-    audio = new AudioContext();
-    // A lowpass and a dotted-eighth echo at the track's tempo: enough space to make
-    // single notes sound like a melody.
-    const lp = audio.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2000;
-    const delay = audio.createDelay(); delay.delayTime.value = 60 / 122 * 0.75;
-    const fb = audio.createGain(); fb.gain.value = 0.4;
-    const wet = audio.createGain(); wet.gain.value = 0.3;
-    out = audio.createGain(); out.gain.value = 0.18;
-    out.connect(lp); lp.connect(audio.destination);
-    lp.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(audio.destination);
-  }
-  function pluck(semitones) {
-    if (!soundOn || musicPlaying || !audio) return;
-    const t = audio.currentTime, f = 110 * Math.pow(2, semitones / 12);
-    const env = audio.createGain();
-    env.gain.setValueAtTime(0.0001, t);
-    env.gain.exponentialRampToValueAtTime(1, t + 0.02);
-    env.gain.exponentialRampToValueAtTime(0.2, t + 0.5);
-    env.gain.exponentialRampToValueAtTime(0.0001, t + 3);
-    env.connect(out);
-    for (const [freq, type, gain] of [[f, 'sine', 0.5], [f * 1.004, 'sine', 0.3], [f * 2, 'triangle', 0.08]]) {
-      const o = audio.createOscillator(), g = audio.createGain();
-      o.type = type; o.frequency.value = freq; g.gain.value = gain;
-      o.connect(g); g.connect(env);
-      o.start(t); o.stop(t + 3.1);
-    }
-  }
-  const soundBtn = $('sound');
-  soundBtn.addEventListener('click', () => {
-    soundOn = !soundOn;
-    if (soundOn && !audio) initAudio();
-    if (audio) soundOn ? audio.resume() : audio.suspend();
-    soundBtn.setAttribute('aria-pressed', soundOn);
-    soundBtn.textContent = soundOn ? '♪ sound on' : '♪ sound off';
-    if (soundOn) pluck(noteOf(MODES[mode])[1]);
-  });
-
-  // ---- modes --------------------------------------------------------------
-  let mode = 5, clock = 0, lastChange = 0, lastTouch = -1e9;
+  // ---- plate modes --------------------------------------------------------
+  let mode = 5;
   function setMode(i) {
     mode = i;
-    const [n, m, sign] = MODES[i], [name, semis] = noteOf(MODES[i]);
+    const [n, m, sign] = MODES[i];
     sim.uN.value = n; sim.uM.value = m; sim.uSign.value = sign;
-    $('ui-mode').textContent = n + (sign < 0 ? '−' : '+') + m;
-    $('ui-note').textContent = name;
-    lastChange = clock;
-    pluck(semis);
-    if (reduce.matches) settle();
+    if (reduce.matches) settle(120);
+    wake();
   }
-  function nextMode() {
+  function randomMode(except) {
     let i;
-    do { i = Math.floor(Math.random() * MODES.length); } while (i === mode);
-    setMode(i);
+    do { i = Math.floor(Math.random() * MODES.length); } while (i === except);
+    return i;
   }
 
-  // ---- pointer: move to brush the sand, click for a new note --------------
-  let brushTarget = 0, down = null;
-  function toPlate(e) {
-    const b = canvas.getBoundingClientRect();
-    sim.uPointer.value.set(((e.clientX - b.left) / b.width * 2 - 1) / 0.97, -((e.clientY - b.top) / b.height * 2 - 1) / 0.97);
+  // ---- audio --------------------------------------------------------------
+  let ac = null, bus = null, noise = null, muted = false, musicPlaying = false;
+  try { muted = localStorage.getItem('sound') === 'off'; } catch (e) {}
+  const soundBtn = $('sound');
+  function showSound() {
+    soundBtn.setAttribute('aria-pressed', String(!muted));
+    soundBtn.textContent = muted ? '♪ off' : '♪ on';
   }
-  canvas.addEventListener('pointermove', (e) => { toPlate(e); brushTarget = 1; lastTouch = clock; });
-  canvas.addEventListener('pointerleave', () => { brushTarget = 0; });
-  canvas.addEventListener('pointercancel', () => { brushTarget = 0; down = null; });
-  canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; toPlate(e); });
-  canvas.addEventListener('pointerup', (e) => {
-    if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 8) { lastTouch = clock; nextMode(); }
-    down = null;
-    if (e.pointerType === 'touch') brushTarget = 0;
+  showSound();
+  function setLevel() {
+    if (bus) bus.master.gain.setTargetAtTime(muted || musicPlaying ? 0 : 0.9, ac.currentTime, 0.05);
+  }
+  soundBtn.addEventListener('click', () => {
+    muted = !muted;
+    try { localStorage.setItem('sound', muted ? 'off' : 'on'); } catch (e) {}
+    showSound(); setLevel();
   });
 
-  // ---- music: while Ad Astra plays, a new figure every bar and a jolt on every kick
-  const BPM = 122, BAR = 4 * 60 / BPM;
-  let beat = 0, beatTarget = 0, musicStart = 0;
+  function impulse(seconds, decay) {
+    // Reverb from scratch: a few seconds of stereo noise that dies away.
+    const len = Math.floor(ac.sampleRate * seconds), b = ac.createBuffer(2, len, ac.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = b.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    return b;
+  }
+  function initAudio() {
+    ac = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+    const master = ac.createGain();
+    const comp = ac.createDynamicsCompressor();
+    comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 3;
+    comp.attack.value = 0.005; comp.release.value = 0.2;
+    master.connect(comp); comp.connect(ac.destination);
+
+    const reverb = ac.createConvolver(); reverb.buffer = impulse(3.2, 2.6);
+    const rev = ac.createGain(); rev.gain.value = 0.45;
+    const revOut = ac.createGain(); revOut.gain.value = 0.6;
+    rev.connect(reverb); reverb.connect(revOut); revOut.connect(master);
+
+    // Ping-pong delay, a dotted eighth: left, then right, darker each time.
+    const delay = ac.createGain(); delay.gain.value = 0.3;
+    const dl = ac.createDelay(2), dr = ac.createDelay(2);
+    dl.delayTime.value = dr.delayTime.value = S16 * 3;
+    const fb = ac.createGain(); fb.gain.value = 0.42;
+    const tone = ac.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 3000;
+    const merge = ac.createChannelMerger(2);
+    delay.connect(dl); dl.connect(dr); dr.connect(tone); tone.connect(fb); fb.connect(dl);
+    dl.connect(merge, 0, 0); dr.connect(merge, 0, 1);
+    const delayOut = ac.createGain(); delayOut.gain.value = 0.6;
+    merge.connect(delayOut); delayOut.connect(master); delayOut.connect(rev);
+
+    const dry = ac.createGain(); dry.connect(master);
+    // The pad goes through its own bus so the kick can duck it — the breathing
+    // that makes it sound like melodic techno rather than a ringtone.
+    const pad = ac.createGain(); pad.connect(dry); pad.connect(rev);
+
+    noise = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.1), ac.sampleRate);
+    const nd = noise.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+
+    bus = { master, dry, delay, rev, pad };
+    setLevel();
+  }
+
+  // A pluck: two detuned saws, a sub and a soft octave, through a lowpass whose
+  // cutoff falls with the note. The note itself is short; the delay and reverb
+  // carry the tail. A cap on voices sounding at once keeps loops from piling up.
+  const MAX_VOICES = small ? 12 : 20;
+  let voices = [];
+  function pluck(t, midi, vel, pan) {
+    voices = voices.filter((end) => end > ac.currentTime);
+    if (voices.length >= MAX_VOICES) return;
+    voices.push(t + 0.95);
+    const f = mtof(midi);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 5;
+    lp.frequency.setValueAtTime(Math.min(f * 9 + 2600 * vel, 12000), t);
+    lp.frequency.exponentialRampToValueAtTime(Math.max(f * 1.3, 200), t + 0.42);
+    const amp = ac.createGain();
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(0.2 * vel, t + 0.005);
+    amp.gain.exponentialRampToValueAtTime(0.05 * vel, t + 0.3);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+    const panner = ac.createStereoPanner(); panner.pan.value = pan;
+    for (const [type, mult, detune, gain] of [['sawtooth', 1, -8, 0.5], ['sawtooth', 1, 8, 0.5], ['sine', 0.5, 0, 0.6], ['triangle', 2, 0, 0.1]]) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = f * mult; o.detune.value = detune; g.gain.value = gain;
+      o.connect(g); g.connect(lp);
+      o.start(t); o.stop(t + 0.95);
+    }
+    lp.connect(amp); amp.connect(panner);
+    panner.connect(bus.dry); panner.connect(bus.delay); panner.connect(bus.rev);
+  }
+  function pad(t, chord, dur) {
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 750; lp.Q.value = 0.8;
+    const amp = ac.createGain();
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(0.07, t + 0.6);
+    amp.gain.setValueAtTime(0.07, t + dur - 0.1);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur + 1.0);
+    for (const m of chord.pad) for (const detune of [-9, 9]) {
+      const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = detune;
+      o.connect(lp); o.start(t); o.stop(t + dur + 1.1);
+    }
+    const sub = ac.createOscillator(), sg = ac.createGain();
+    sub.type = 'sine'; sub.frequency.value = mtof(chord.bass); sg.gain.value = 2.2;
+    sub.connect(sg); sg.connect(amp); sub.start(t); sub.stop(t + dur + 1.1);
+    lp.connect(amp); amp.connect(bus.pad);
+  }
+  function kick(t) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(44, t + 0.11);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+    o.connect(g); g.connect(bus.dry); o.start(t); o.stop(t + 0.45);
+    bus.pad.gain.setValueAtTime(0.3, t); bus.pad.gain.linearRampToValueAtTime(1, t + 0.32);
+  }
+  function hat(t, vel) {
+    const s = ac.createBufferSource(); s.buffer = noise;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 8000;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05 * vel, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+    s.connect(hp); hp.connect(g); g.connect(bus.dry); g.connect(bus.delay);
+    s.start(t); s.stop(t + 0.08);
+  }
+
+  // ---- sequencer ----------------------------------------------------------
+  let t0 = 0, tick = 0, nextTime = 0, timer = 0, lastBusyTick = -1e9;
+  let chordModes = [0, 1, 2, 3];
+  const phrases = [];            // strokes that have been let go and are looping
+  let phraseId = 0;
+  const vq = [];                 // things the sand should do, stamped with audio time
+  const cue = (e) => { if (!reduce.matches) vq.push(e); };   // a still page never drains the queue
+  let drawing = false, rec = null, cur = null, lastNote = null;
+
+  const timeOfTick = (k) => t0 + k * S16;
+  const chordAt = (k) => CHORDS[Math.floor(k / 16) % 4];
+  const busy = () => drawing || phrases.length > 0;
+
+  function startClock() {
+    if (timer) return;
+    t0 = ac.currentTime + 0.06; tick = 0; nextTime = t0; lastBusyTick = 0;
+    // Each chord gets its own figure for this session, so the sand repeats with the harmony.
+    const pool = MODES.map((_, i) => i).sort(() => Math.random() - 0.5);
+    chordModes = pool.slice(0, 4);
+    timer = setInterval(schedule, 25);
+    schedule();
+  }
+  function schedule() {
+    while (nextTime < ac.currentTime + 0.12) { playTick(tick, nextTime); tick++; nextTime += S16; }
+    // Two quiet bars after the last note, the clock stops, and nothing runs at all.
+    if (!busy() && tick > lastBusyTick + 32) { clearInterval(timer); timer = 0; }
+  }
+  function playTick(k, t) {
+    const chord = chordAt(k);
+    if (busy()) {
+      lastBusyTick = k;
+      if (k % 16 === 0) { pad(t, chord, S16 * 16); cue({ t, bar: Math.floor(k / 16) % 4 }); }
+      if (k % 4 === 0) { kick(t); cue({ t, hit: 0.35 }); }
+      if (k % 4 === 2) hat(t, 1);
+      else if (k % 2 === 1) hat(t, 0.35);
+    }
+
+    // While drawing: a note on each eighth the pointer has moved, and on the
+    // sixteenths in between only when it moves fast — so a melody has room to breathe.
+    if (drawing && cur) {
+      const dist = lastNote ? Math.hypot(cur.x - lastNote.x, cur.y - lastNote.y) : 60;
+      if (k % 2 === 0 ? dist > 14 : dist > 70) {
+        const pitch = 57 + (1 - cur.y / innerHeight) * 27;   // A3 at the bottom, C6 at the top
+        const vel = Math.min(0.5 + dist / 160, 1);
+        const pan = (cur.x / innerWidth * 2 - 1) * 0.7;
+        rec.events.push({ tick: k, pitch, vel, pan });
+        pluck(t, snap(pitch, chord), vel, pan);
+        cue({ t, hit: vel * 0.5 });
+        lastNote = { x: cur.x, y: cur.y };
+      }
+    }
+
+    // Looping strokes, quieter each time round, re-harmonised to the chord they land on.
+    for (let i = phrases.length - 1; i >= 0; i--) {
+      const ph = phrases[i], rel = k - ph.loopStart;
+      if (rel < 0) continue;
+      const rep = Math.floor(rel / ph.len);
+      if (rep >= ph.reps) { phrases.splice(i, 1); continue; }
+      const off = rel % ph.len, g = Math.pow(0.8, rep + 1);
+      for (const ev of ph.events) if (ev.off === off) {
+        pluck(t, snap(ev.pitch, chord), ev.vel * g, ev.pan);
+        cue({ t, hit: ev.vel * g * 0.5 });
+      }
+    }
+  }
+
+  // ---- drawing ------------------------------------------------------------
+  const toSand = (x, y) => {
+    const r = stage.getBoundingClientRect();
+    return [((x - r.left) / r.width * 2 - 1) * aspect, -((y - r.top) / r.height * 2 - 1)];
+  };
+  let live = null;   // last sand position of the live brush
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || musicPlaying) return;
+    e.preventDefault();
+    if (!ac) initAudio();
+    if (ac.state !== 'running') ac.resume();
+    // Drawing state first: the clock's first ticks must already see a stroke,
+    // or the first bar starts without its pad and kick.
+    drawing = true; lastNote = null;
+    cur = { x: e.clientX, y: e.clientY };
+    live = toSand(e.clientX, e.clientY);
+    rec = { events: [], path: [{ t: ac.currentTime, p: live }] };
+    startClock();
+    stage.setPointerCapture(e.pointerId);
+    wake();
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!drawing) return;
+    cur = { x: e.clientX, y: e.clientY };
+    const p = toSand(e.clientX, e.clientY), lastP = rec.path[rec.path.length - 1].p;
+    if (Math.hypot(p[0] - lastP[0], p[1] - lastP[1]) > 0.004) rec.path.push({ t: ac.currentTime, p });
+  });
+  function endStroke() {
+    if (!drawing) return;
+    drawing = false;
+    const ev = rec.events;
+    if (!ev.length) return;
+    // Loop the stroke from the start of its first bar, a whole number of bars long
+    // (at most four), beginning at the next bar line.
+    const start = Math.floor(ev[0].tick / 16) * 16;
+    const len = Math.min(Math.ceil((ev[ev.length - 1].tick + 1 - start) / 16) * 16, 64);
+    const startTime = timeOfTick(start);
+    phrases.push({
+      id: phraseId++, len, reps: 4,
+      loopStart: Math.ceil(tick / 16) * 16,
+      events: ev.map((e) => ({ off: e.tick - start, pitch: e.pitch, vel: e.vel, pan: e.pan })).filter((e) => e.off < len),
+      path: rec.path.map((s) => ({ t: s.t - startTime, p: s.p })).filter((s) => s.t >= 0 && s.t <= len * S16),
+      head: null,
+    });
+    if (phrases.length > 3) phrases.shift();
+  }
+  stage.addEventListener('pointerup', endStroke);
+  stage.addEventListener('pointercancel', endStroke);
+  addEventListener('blur', endStroke);
+
+  // Where a looping stroke's playhead is right now, by replaying its recorded path.
+  function headOf(ph, at) {
+    const base = timeOfTick(ph.loopStart), span = ph.len * S16;
+    if (at < base || !ph.path.length) return null;
+    const rep = Math.floor((at - base) / span);
+    if (rep >= ph.reps) return null;
+    const local = at - base - rep * span, path = ph.path;
+    if (local < path[0].t || local > path[path.length - 1].t) return null;
+    let i = 1;
+    while (i < path.length - 1 && path[i].t < local) i++;
+    const a = path[i - 1], b = path[i], u = b.t > a.t ? (local - a.t) / (b.t - a.t) : 0;
+    return [a.p[0] + (b.p[0] - a.p[0]) * u, a.p[1] + (b.p[1] - a.p[1]) * u];
+  }
+
+  // ---- music: while Ad Astra plays, the drawing synth is silent and the sand
+  // takes a new figure every bar and a jolt on every kick.
+  let musicStart = 0, musicBar = -1;
   addEventListener('music', (e) => {
     musicPlaying = e.detail.playing;
-    beatTarget = musicPlaying ? 1 : 0;
-    if (musicPlaying) musicStart = clock;
+    musicStart = performance.now() / 1000; musicBar = -1;
+    setLevel(); wake();
   });
 
   // ---- loop: fixed 60 Hz physics, drawn at the display's rate -------------
+  // The sand sleeps once it has settled and nothing is playing; an idle timer
+  // wakes it every 14 s for a new figure. A quiet page costs nothing.
   const STEP = 1 / 60;
-  let running = false, visible = true, last = 0, acc = 0, fpsN = 0, fpsT = 0, slow = 0;
+  let running = false, visible = true, last = 0, acc = 0, clock = 0, awakeUntil = 0, kickEnv = 0;
+  let fpsN = 0, fpsT = 0, slow = 0;
   function step() { clock += STEP; sim.uTime.value = clock; gpu.compute(); }
-  function settle() { for (let i = 0; i < 300; i++) step(); look.uFade.value = 1; draw(); }
+  function settle(n) { sim.uStr.value.fill(0); for (let i = 0; i < n; i++) step(); look.uFade.value = 1; draw(); }
 
   function frame(now) {
     if (!running) return;
     const dt = Math.min((now - last) / 1000, 0.1);
     last = now;
+    const at = ac ? ac.currentTime : 0;
 
-    beat += (beatTarget - beat) * (1 - Math.pow(0.05, dt));
-    const sinceMusic = clock - musicStart;
-    sim.uKick.value = beat * Math.exp(-((sinceMusic * BPM / 60) % 1) * 7);
-    sim.uBrush.value += (brushTarget - sim.uBrush.value) * (1 - Math.pow(0.001, dt));
-    look.uFade.value = Math.min(look.uFade.value + dt / 1.2, 1);
-
-    // A new figure every bar while the music plays; otherwise every 8 s,
-    // but never while someone is playing with the plate.
+    // Things the sequencer asked for, when their moment comes.
+    while (vq.length && vq[0].t <= at) {
+      const e = vq.shift();
+      if (e.bar !== undefined) { setMode(chordModes[e.bar]); $('ui-chord').textContent = CHORDS[e.bar].name; }
+      else kickEnv = Math.max(kickEnv, e.hit);
+    }
+    kickEnv *= Math.exp(-dt * 7);
+    let kickNow = kickEnv;
     if (musicPlaying) {
-      if (Math.floor(sinceMusic / BAR) !== Math.floor((sinceMusic - dt) / BAR)) nextMode();
-    } else if (clock - lastChange > 8 && clock - lastTouch > 8) nextMode();
+      const beats = (now / 1000 - musicStart) * BPM / 60;
+      kickNow = Math.max(kickNow, Math.exp(-(beats % 1) * 7) * 0.6);
+      const bar = Math.floor(beats / 4);
+      if (bar !== musicBar) { musicBar = bar; setMode(randomMode(mode)); }
+    }
+    sim.uKick.value = kickNow;
+
+    // Brushes: the live pointer, then each looping stroke's playhead.
+    const seg = sim.uSeg.value, str = sim.uStr.value;
+    str.fill(0);
+    if (drawing && cur) {
+      const p = toSand(cur.x, cur.y);
+      seg[0].set(live[0], live[1], p[0], p[1]); str[0] = 1; live = p;
+    }
+    for (let i = 0; i < phrases.length && i < 3; i++) {
+      const ph = phrases[i], h = headOf(ph, at);
+      if (h) { const from = ph.head || h; seg[i + 1].set(from[0], from[1], h[0], h[1]); str[i + 1] = 0.85; }
+      ph.head = h;
+    }
+    look.uFade.value = Math.min(look.uFade.value + dt / 1.4, 1);
 
     acc += dt;
     let n = 0;
-    while (acc >= STEP && n < 3) { step(); acc -= STEP; n++; }
+    while (acc >= STEP && n < 3) { step(); acc -= STEP; n++; str.fill(0); }  // carve once per frame
     if (n === 3) acc = 0;   // a slow frame slows the sand; it never makes it jump
     draw();
 
@@ -649,27 +913,32 @@ function boot() {
       if (slow >= 4 && dpr > 1) { dpr = 1; renderer.setPixelRatio(1); resize(); }
       fpsN = 0; fpsT = 0;
     }
+
+    if (!busy() && !musicPlaying && !vq.length && now / 1000 > awakeUntil) { running = false; return; }
     requestAnimationFrame(frame);
   }
-  function start() {
+  function wake() {
+    awakeUntil = performance.now() / 1000 + 7;
     if (running || !visible || document.hidden || reduce.matches) return;
     running = true;
     last = performance.now();
     requestAnimationFrame(frame);
   }
-  function stop() { running = false; }
-  // Nothing runs while the plate is scrolled out of view or the tab is hidden.
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(canvas);
-  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
-  reduce.addEventListener('change', () => { if (reduce.matches) { stop(); settle(); } else start(); });
+  setInterval(() => { if (!busy() && !musicPlaying && !document.hidden && visible) setMode(randomMode(mode)); }, 14000);
+
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(stage);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { running = false; endStroke(); phrases.length = 0; } else wake();
+  });
+  reduce.addEventListener('change', () => { if (reduce.matches) { running = false; settle(300); } else wake(); });
 
   syncTheme();
-  setMode(mode);
   resize();
+  setMode(mode);
   canvas.classList.add('on');
-  // With reduced motion the sand is shown already settled, and each click jumps
-  // straight to the next settled figure.
-  if (reduce.matches) settle(); else start();
+  // With reduced motion the sand appears already settled and stays still;
+  // drawing still plays.
+  if (reduce.matches) settle(300); else wake();
 }
 boot();
 </script>
