@@ -1070,7 +1070,10 @@ async function boot() {
   try { muted = localStorage.getItem('sound') === 'off'; } catch (e) {}
   const soundBtn = $('sound');
   function showSound() { soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.textContent = muted ? '♪ off' : '♪ on'; }
-  function setLevel() { if (studio) studio.out.gain.setTargetAtTime(muted || musicPlaying ? 0 : 0.9, studio.ac.currentTime, 0.05); }
+  // Output level after the limiter: 4.5 dB under full scale, so the page never plays
+  // louder than whatever else the visitor is listening to.
+  const LEVEL = 0.9 * Math.pow(10, -4.5 / 20);
+  function setLevel() { if (studio) studio.out.gain.setTargetAtTime(muted || musicPlaying ? 0 : LEVEL, studio.ac.currentTime, 0.05); }
   showSound();
   soundBtn.addEventListener('click', () => {
     muted = !muted;
