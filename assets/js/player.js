@@ -10,6 +10,7 @@ play.addEventListener('click', (e) => {
   dispatchEvent(new CustomEvent('cover', { detail: { img: play.querySelector('img'), x: e.clientX, y: e.clientY } }));
   play.disabled = true;
   $('player-wrap').hidden = false;
+  $('dock').classList.add('open');
   window.onYouTubeIframeAPIReady = () => new YT.Player('player', {
     videoId: VIDEO,
     host: 'https://www.youtube-nocookie.com',

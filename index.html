@@ -39,6 +39,7 @@
   <symbol id="i-linkedin" viewBox="0 0 16 16"><path d="M13.6 0H2.4A2.4 2.4 0 0 0 0 2.4v11.2A2.4 2.4 0 0 0 2.4 16h11.2a2.4 2.4 0 0 0 2.4-2.4V2.4A2.4 2.4 0 0 0 13.6 0ZM4.9 13.4H2.6V6h2.3v7.4ZM3.7 5a1.3 1.3 0 1 1 0-2.7 1.3 1.3 0 0 1 0 2.7Zm9.7 8.4h-2.3V9.8c0-.9 0-2-1.2-2s-1.4.9-1.4 1.9v3.7H6.2V6h2.2v1h.1c.3-.6 1.1-1.2 2.2-1.2 2.4 0 2.8 1.6 2.8 3.6v4Z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18.9 1.2h3.7l-8 9.2L24 22.8h-7.4l-5.8-7.6-6.6 7.6H.5l8.6-9.8L0 1.2h7.6l5.2 6.9 6.1-6.9Zm-1.3 19.4h2L6.5 3.3H4.3l13.3 17.3Z"/></symbol>
   <symbol id="i-medium" viewBox="0 0 24 24"><path d="M13.5 12a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Zm7.4 0c0 3.5-1.5 6.4-3.4 6.4s-3.4-2.9-3.4-6.4 1.5-6.4 3.4-6.4 3.4 2.9 3.4 6.4ZM24 12c0 3.2-.5 5.7-1.2 5.7s-1.2-2.6-1.2-5.7.5-5.7 1.2-5.7S24 8.8 24 12Z"/></symbol>
+  <symbol id="i-spotify" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0Zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02Zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.36.18.54.78.24 1.2Zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3Z"/></symbol>
   <symbol id="i-mail" viewBox="0 0 16 16"><path d="M1.75 2h12.5c.97 0 1.75.78 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.78.78 2 1.75 2ZM1.5 5.81v6.44c0 .14.11.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.81L8.38 9.4a.75.75 0 0 1-.76 0L1.5 5.81Zm13-2.06H1.5v.44l6.5 3.79 6.5-3.79v-.44Z"/></symbol>
   <symbol id="i-copy" viewBox="0 0 16 16"><path d="M0 6.75C0 5.78.78 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .14.11.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Zm5-5C5 .78 5.78 0 6.75 0h7.5C15.22 0 16 .78 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .14.11.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></symbol>
   <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
@@ -59,6 +60,12 @@
 <!-- The sky: the galaxy, and the surface you draw on. -->
 <div class="sky" id="sky">
   <canvas id="bg" aria-label="A simulated galaxy. Draw in it and it plays Ad Astra."></canvas>
+</div>
+<div class="veil" aria-hidden="true"></div>
+
+<!-- The dock, fixed at the bottom right: the cue, the sound button, and a small
+     player for Ad Astra (a hobby). Its YouTube player opens inside it. -->
+<aside class="dock" id="dock" aria-label="Music">
   <div class="hud" id="hud">
     <span class="cue mono" id="hud-cue">draw in the stars</span>
     <button class="sound" id="sound" type="button" aria-pressed="true" aria-label="Mute">
@@ -66,8 +73,19 @@
       <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>
     </button>
   </div>
-</div>
-<div class="veil" aria-hidden="true"></div>
+  <div class="mini" id="track">
+    <button class="cover" id="play" type="button" aria-label="Play Ad Astra by NUO">
+      <img src="https://i.ytimg.com/vi/5mYk19IsFmE/hqdefault.jpg" alt="" width="480" height="360" decoding="async">
+      <span class="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+    </button>
+    <div class="mini-text">
+      <div class="track-title">Ad Astra</div>
+      <div class="track-meta">NUO · house music, a hobby</div>
+    </div>
+    <a class="mini-link" href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW" target="_blank" rel="noopener" aria-label="Listen on Spotify" title="Listen on Spotify"><svg aria-hidden="true"><use href="#i-spotify"/></svg></a>
+    <div class="player" id="player-wrap" hidden><div id="player"></div></div>
+  </div>
+</aside>
 
 <button class="theme" id="theme" type="button" aria-label="Toggle dark mode">
   <svg class="moon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-moon"/></svg>
@@ -221,27 +239,6 @@
         <p>On Medium</p>
       </a>
     </div>
-  </section>
-
-  <section class="sec rise" style="--i:7">
-    <div class="sec-head">
-      <span class="sec-ico"><svg class="ico" aria-hidden="true"><use href="#i-note"/></svg></span>
-      <div><h2>Off the clock</h2><p class="sec-sub">House music as NUO — a hobby</p></div>
-    </div>
-    <div class="card track" id="track">
-      <button class="cover" id="play" type="button" aria-label="Play Ad Astra by NUO">
-        <img src="https://i.ytimg.com/vi/5mYk19IsFmE/hqdefault.jpg" alt="" width="480" height="360" loading="lazy" decoding="async">
-        <span class="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
-      </button>
-      <div>
-        <div class="track-title">Ad Astra</div>
-        <div class="track-meta">NUO · Soundtype · 2023</div>
-        <p class="desc">Debut single: deep bass, atmospheric pads and a synth line that climbs toward the stars. Play it and the galaxy moves with it.</p>
-        <p class="track-links"><a href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW" target="_blank" rel="noopener">Listen on Spotify</a> · <a href="https://mixmag.com.tr/read/nuo-ad-astra-news" target="_blank" rel="noopener">Featured in Mixmag Turkey →</a></p>
-      </div>
-      <div class="player" id="player-wrap" hidden><div id="player"></div></div>
-    </div>
-    <a class="all" href="https://open.spotify.com/artist/51cQ2Nmn14MVBDEQ7j4gst" target="_blank" rel="noopener">All tracks on Spotify →</a>
   </section>
 
   <footer>© <span id="year">2026</span> Nurettin Çoban</footer>

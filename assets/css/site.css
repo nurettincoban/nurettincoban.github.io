@@ -42,11 +42,14 @@ a:hover { text-decoration: underline; }
 #bg.on { opacity: 1; }
 .fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
 .sky::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 70%, var(--bg)); }
-.hud {
-  position: absolute; right: 10px; bottom: 8px; z-index: 1;
-  display: flex; align-items: center; gap: 8px;
-  opacity: 0; transition: opacity 1s;
+/* ---- the dock: fixed at the bottom right, the cue and sound button over a small
+   player. On phones it is a strip along the bottom of the screen. */
+.dock {
+  position: fixed; right: 16px; bottom: 14px; z-index: 6; width: 300px;
+  display: grid; gap: 4px; justify-items: end;
 }
+.dock.open { width: 380px; }       /* wide enough for YouTube's 200 px minimum player */
+.hud { display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity 1s; }
 .hud.on { opacity: 1; }
 .cue { font-size: 12.5px; letter-spacing: .05em; color: var(--accent); transition: opacity 1.2s; }
 .sound {
@@ -68,7 +71,6 @@ body.nosky main { padding-top: 96px; }
 @media (min-width: 1000px) {
   .sky { position: fixed; inset: 0; height: auto; }
   .sky::after { display: none; }
-  .hud { right: 18px; bottom: 14px; }
   /* Dim the sky under the text column, so the words never compete with the stars. */
   .veil {
     display: block; position: fixed; inset: 0; z-index: 1; pointer-events: none;
@@ -152,24 +154,32 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .card p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 .all { display: inline-block; margin-top: 14px; font-size: 15px; }
 
-/* music */
-.track { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: center; padding: 14px; }
-.cover { position: relative; width: 120px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: #000; }
+/* the Ad Astra player in the dock */
+.mini {
+  width: 100%; display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 12px;
+  padding: 8px 10px 8px 8px; background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 10px 30px color-mix(in srgb, #000 22%, transparent);
+}
+.cover { position: relative; width: 52px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 9px; overflow: hidden; cursor: pointer; background: #000; }
 .cover img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.36); transition: transform .5s ease; display: block; }
 .cover:hover img { transform: scale(1.45); }
 .play-icon { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle, rgba(0,0,0,.1), rgba(0,0,0,.45)); }
-.play-icon svg { width: 42px; height: 42px; fill: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); transition: transform .2s; }
+.play-icon svg { width: 22px; height: 22px; fill: #fff; filter: drop-shadow(0 1px 4px rgba(0,0,0,.5)); transition: transform .2s; }
 .cover:hover .play-icon svg { transform: scale(1.12); }
-.track-title { font-size: 21px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
-.track-meta { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
-.track p { margin: 0 0 6px; }
-.track a { font-size: 14px; }
-.track .track-links { margin: 0; font-size: 14px; color: var(--muted); }
-.player { grid-column: 1 / -1; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; }
+.mini-text { min-width: 0; line-height: 1.3; }
+.track-title { font-size: 15px; font-weight: 650; }
+.track-meta { color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-link { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.mini-link:hover { color: var(--accent); }
+.mini-link svg { width: 18px; height: 18px; fill: currentColor; }
+.player { grid-column: 1 / -1; aspect-ratio: 16 / 9; min-height: 200px; border-radius: 9px; overflow: hidden; }
 .player iframe { width: 100%; height: 100%; border: 0; display: block; }
-.track.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
+.mini.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
 @keyframes pulse { 0% { transform: scale(1.05); } 60%, 100% { transform: scale(1); } }
-@media (max-width: 480px) { .track { grid-template-columns: 92px 1fr; gap: 14px; } .cover { width: 92px; } .track .desc { display: none; } }
+@media (max-width: 999px) {
+  .dock, .dock.open { left: 10px; right: 10px; bottom: 10px; width: auto; }
+  main { padding-bottom: 180px; }
+}
 
 /* ---- experience: each company card plays a tiny scene of the work done there */
 .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
@@ -238,7 +248,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 @media (prefers-reduced-motion: reduce) {
   .rise { animation: none; opacity: 1; transform: none; }
   .card, .theme, .links a, .links button { transition: none; }
-  .track.playing .cover { animation: none; }
+  .mini.playing .cover { animation: none; }
   .scene * { animation: none !important; }
   .s-ticket, .s-steam { opacity: 1; }
 }

@@ -75,7 +75,8 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
       // The visible square of the thumbnail: object-fit: cover, then scaled 1.36 in CSS.
       const side = Math.min(img.naturalWidth, img.naturalHeight) / 1.36;
       const sx0 = (img.naturalWidth - side) / 2, sy0 = (img.naturalHeight - side) / 2;
-      const G = small ? 14 : 22, cell = box.width / G, scell = side / G, t0 = performance.now();
+      // Tiles of about five pixels, however large the cover is drawn.
+      const G = Math.max(8, Math.min(small ? 14 : 22, Math.round(box.width / 5))), cell = box.width / G, scell = side / G, t0 = performance.now();
       const far = Math.hypot(box.width, box.height);
       for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) {
         const x = box.left + (i + 0.5) * cell, y = box.top + (j + 0.5) * cell;
