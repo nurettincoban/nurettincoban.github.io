@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nurettin Çoban</title>
-<meta name="description" content="Nurettin Çoban builds products by day and makes melodic techno as NUO by night. Draw in the stars and it plays what you draw.">
+<meta name="description" content="Nurettin Çoban builds products by day and produces house music as NUO by night. Draw in the stars and it plays Ad Astra.">
 <link rel="canonical" href="https://nurettincoban.github.io/">
 <meta property="og:title" content="Nurettin Çoban">
-<meta property="og:description" content="Builds products by day, makes melodic techno as NUO by night.">
+<meta property="og:description" content="Builds products by day, produces house music as NUO by night.">
 <meta property="og:url" content="https://nurettincoban.github.io/">
 <meta property="og:image" content="https://github.com/nurettincoban.png">
 <link rel="icon" href="https://github.com/nurettincoban.png">
@@ -263,7 +263,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 <div class="sky" id="sky">
   <canvas id="bg" aria-label="A simulated galaxy. Draw in it and it plays what you draw."></canvas>
   <div class="hud mono" id="hud">
-    <div class="how">draw in the stars — it plays what you draw · best with headphones</div>
+    <div class="how">draw in the stars — it plays Ad Astra · best with headphones</div>
     <div><b id="hud-count">—</b> stars · <b id="hud-fps">—</b> fps · <b id="hud-bpm">122 bpm</b><button class="sound" id="sound" type="button" aria-pressed="true">♪ on</button></div>
   </div>
 </div>
@@ -284,7 +284,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
     </div>
   </div>
 
-  <p class="bio rise" style="--i:1">I build products by day, and make melodic techno as <em>NUO</em> by night.</p>
+  <p class="bio rise" style="--i:1">I build products by day, and produce house music as <em>NUO</em> by night.</p>
 
   <ul class="facts rise" style="--i:2">
     <li class="fact"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
@@ -333,7 +333,7 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
   <section class="sec rise" style="--i:4">
     <div class="sec-head">
       <span class="sec-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
-      <div><h2>Music</h2><p class="sec-sub">Melodic techno, as NUO</p></div>
+      <div><h2>Music</h2><p class="sec-sub">Music producer, as NUO</p></div>
     </div>
     <div class="card track" id="track">
       <button class="cover" id="play" type="button" aria-label="Play Ad Astra by NUO">
@@ -667,13 +667,15 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 // let go), and a pulse with every note. The CPU sets a few uniforms a frame. It starts
 // as a big bang; escaping stars are reborn on the spiral arms.
 //
-// Drawing plays it. Notes snap to sixteenths at Ad Astra's 122 bpm and to its own
-// palette (C minor, read from the stems), so whatever you draw is in time, in key and
-// belongs to the track. Height is pitch; where you draw is where the note sounds, in
-// 3D around you (HRTF binaural audio, best on headphones). Let go and the stroke loops
-// four times while its playhead pulls stars along the path you drew.
-// Only the melody plays, through a small studio chain: hall reverb, ping-pong delay,
-// EQ, glue compression, saturation and a limiter.
+// Drawing plays Ad Astra. Two loops cut from the track's own stems — eight bars of
+// the melody and the pad under it — run in sync; drawing decides how you hear them.
+// Speed brings the melody forward, height opens the filter (low is distant and muffled,
+// high is bright), and where you draw is where it sounds, in 3D around you (HRTF,
+// best on headphones). Let go and the stroke replays itself three times, sound and
+// path together, while its playhead pulls stars along the line you drew; the real
+// notes of the melody light up the stars where the pen is. Everything goes through a
+// small studio chain: hall reverb, ping-pong delay, EQ, glue compression, saturation
+// and a limiter.
 import {
   WebGLRenderer, Scene, PerspectiveCamera, BufferGeometry, BufferAttribute, ShaderMaterial,
   Points, Color, Vector2, Vector3, Vector4, Raycaster, Plane, AdditiveBlending, NormalBlending
@@ -690,20 +692,9 @@ const small = innerWidth < 700 || (navigator.hardwareConcurrency || 8) <= 4;
 
 // ===== music =================================================================
 const BPM = 122, S16 = 60 / BPM / 4;
-// Ad Astra's palette, measured from its stems: a C pedal in the bass and a melody
-// that lives on C, D, E♭, F, G and B♭. Drawn notes snap to these pitch classes, which
-// is why nothing drawn can sound wrong, or foreign to the track.
-const SCALE = { name: 'C minor', pcs: [0, 2, 3, 5, 7, 10] };
-const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
-function snap(pitch, chord) {
-  let best = Math.round(pitch), bd = 1e9;
-  for (let m = Math.floor(pitch) - 3; m <= Math.ceil(pitch) + 3; m++) {
-    if (!chord.pcs.includes(((m % 12) + 12) % 12)) continue;
-    const d = Math.abs(m - pitch);
-    if (d < bd) { bd = d; best = m; }
-  }
-  return best;
-}
+// The loops: bars 49–56 of the stem mix, the melody's arpeggio and the pad beneath it.
+// Each file starts with a 0.1 s lead-in holding a marker at 0.05 s (see createStudio).
+const LOOPS = { loop: 15.737705, start: 94.4311, marker: 0.05, leadIn: 0.1, melodyGain: 0.48211, padGain: 0.10977 };
 
 function createStudio() {
   const ac = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
@@ -769,83 +760,65 @@ function createStudio() {
 
   const leadDelay = gain(0.3, dIn), leadRev = gain(0.38, revIn);
 
-  // ---- space: ten fixed HRTF "speakers" around the listener, two rings of five.
-  // A note is spread over its four nearest speakers, so the cost stays the same
-  // however many notes play. Phones get a five-speaker stereo arc instead.
-  const AZ = [-80, -40, 0, 40, 80], EL = small ? [0] : [-8, 32];
-  const speakers = [];
-  for (const el of EL) for (const az of AZ) {
-    let node;
-    try {
-      if (small) throw 0;
+  // ---- the loops. MP3 encoders put a few milliseconds of silence before the audio,
+  // and decoders differ in whether they remove it; each file therefore begins with a
+  // lead-in holding a one-sample marker, and finding it tells us exactly where the
+  // loop begins. The loops then run sample-accurately, melody and pad locked together.
+  const melAmp = gain(0), melTone = filter('lowpass', 900, 0.8);
+  let melPan;
+  try {
+    if (small) throw 0;
+    melPan = new PannerNode(ac, { panningModel: 'HRTF', distanceModel: 'linear', rolloffFactor: 0, positionZ: -2 });
+  } catch (x) { melPan = new StereoPannerNode(ac); }
+  melAmp.connect(melTone); melTone.connect(melPan); melPan.connect(sum);
+  melTone.connect(leadDelay); melTone.connect(leadRev);
+  const padAmp = gain(0), padTone = filter('lowpass', 1400, 0.6);
+  padAmp.connect(padTone); padTone.connect(sum); padTone.connect(gain(0.4, revIn));
+
+  const loops = {};
+  const ready = Promise.all(['melody', 'pad'].map((name) =>
+    fetch('music/ad-astra-' + name + '.mp3')
+      .then((r) => r.arrayBuffer())
+      .then((b) => new Promise((ok, no) => ac.decodeAudioData(b, ok, no)))
+      .then((buf) => {
+        const d = buf.getChannelData(0), end = Math.min(d.length, Math.floor(buf.sampleRate * 0.3));
+        let at = 0;
+        for (let i = 1; i < end; i++) if (Math.abs(d[i]) > Math.abs(d[at])) at = i;
+        loops[name] = { buf, from: at / buf.sampleRate - LOOPS.marker + LOOPS.leadIn };
+      })));
+
+  let sources = null, origin = 0;
+  function start() {
+    if (sources || !loops.melody || !loops.pad) return;
+    origin = ac.currentTime + 0.03;
+    sources = ['melody', 'pad'].map((name) => {
+      const L = loops[name], src = ac.createBufferSource();
+      src.buffer = L.buf; src.loop = true; src.loopStart = L.from; src.loopEnd = L.from + LOOPS.loop;
+      src.connect(name === 'melody' ? melAmp : padAmp);
+      src.start(origin, L.from);
+      return src;
+    });
+  }
+  function stop() { if (sources) { sources.forEach((src) => src.stop()); sources = null; } }
+  // Seconds into the loop: used to light the stars on the melody's real notes.
+  const position = () => (sources ? (((ac.currentTime - origin) % LOOPS.loop) + LOOPS.loop) % LOOPS.loop : -1);
+  // How the loops should sound: melody and pad level (0..1), brightness (0..1), and
+  // where the melody sits around the listener (degrees).
+  function steer(mel, pad, bright, az, el) {
+    const now = ac.currentTime;
+    melAmp.gain.setTargetAtTime(mel * LOOPS.melodyGain * 1.25, now, mel > 0.01 ? 0.06 : 0.5);
+    padAmp.gain.setTargetAtTime(pad * LOOPS.padGain * 2.6, now, pad > 0.01 ? 0.6 : 1.6);
+    melTone.frequency.setTargetAtTime(300 * Math.pow(2, bright * 5.5), now, 0.08);   // 300 Hz to 13.6 kHz
+    padTone.frequency.setTargetAtTime(500 * Math.pow(2, bright * 3), now, 0.4);
+    if (melPan.positionX) {
       const r = az * Math.PI / 180, e = el * Math.PI / 180;
-      node = new PannerNode(ac, {
-        panningModel: 'HRTF', distanceModel: 'linear', rolloffFactor: 0,
-        positionX: 2 * Math.sin(r) * Math.cos(e), positionY: 2 * Math.sin(e), positionZ: -2 * Math.cos(r) * Math.cos(e),
-      });
-    } catch (x) { node = new StereoPannerNode(ac, { pan: az / 90 }); }
-    node.connect(sum);
-    speakers.push(gain(1, node));
-  }
-  function place(src, az, el) {
-    az = Math.max(-80, Math.min(80, az));
-    const i = Math.min(Math.floor((az + 80) / 40), AZ.length - 2), u = (az - AZ[i]) / 40;
-    const cols = [[i, Math.cos(u * Math.PI / 2)], [i + 1, Math.sin(u * Math.PI / 2)]];
-    const rows = EL.length === 1 ? [[0, 1]] : (() => {
-      const v = Math.max(0, Math.min(1, (el + 8) / 40));
-      return [[0, Math.cos(v * Math.PI / 2)], [1, Math.sin(v * Math.PI / 2)]];
-    })();
-    for (const [r, wr] of rows) for (const [c, wc] of cols) {
-      const w = wr * wc;
-      if (w > 0.02) src.connect(gain(w, speakers[r * AZ.length + c]));
-    }
+      melPan.positionX.setTargetAtTime(2 * Math.sin(r) * Math.cos(e), now, 0.08);
+      melPan.positionY.setTargetAtTime(2 * Math.sin(e), now, 0.08);
+      melPan.positionZ.setTargetAtTime(-2 * Math.cos(r) * Math.cos(e), now, 0.08);
+    } else melPan.pan.setTargetAtTime(Math.max(-1, Math.min(1, az / 80)), now, 0.08);
   }
 
-  const osc = (type, f, t, end, to, detune) => {
-    const o = ac.createOscillator(); o.type = type; o.frequency.value = f;
-    if (detune) o.detune.value = detune;
-    o.connect(to); o.start(t); o.stop(end); return o;
-  };
-
-  // ---- lead: a supersaw pluck through a two-stage lowpass whose cutoff falls with
-  // the note, a sine sub, and a quiet FM bell on top for shimmer. Short; the delay
-  // and the hall carry the tail. Voices are capped so loops never pile up.
-  const MAX_VOICES = small ? 8 : 12;
-  let voices = [];
-  function lead(t, midi, vel, az, el) {
-    voices = voices.filter((end) => end > ac.currentTime);
-    if (voices.length >= MAX_VOICES) return;
-    const dur = 1.1, end = t + dur + 0.05, f = mtof(midi);
-    voices.push(end);
-    const amp = ac.createGain();
-    amp.gain.setValueAtTime(0.0001, t);
-    amp.gain.exponentialRampToValueAtTime(0.15 * vel, t + 0.004);
-    amp.gain.exponentialRampToValueAtTime(0.045 * vel, t + 0.35);
-    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    const top = Math.min(f * 7 + 3200 * vel, 15000), floor = Math.max(f * 1.6, 260);
-    const lp = filter('lowpass', top, 1.6);
-    lp.frequency.setValueAtTime(top, t); lp.frequency.exponentialRampToValueAtTime(floor, t + 0.5);
-    if (small) lp.connect(amp);
-    else {
-      const lp2 = filter('lowpass', top, 0.7);
-      lp2.frequency.setValueAtTime(top, t); lp2.frequency.exponentialRampToValueAtTime(floor, t + 0.5);
-      lp.connect(lp2); lp2.connect(amp);
-    }
-    const mix = gain(0.3, lp);
-    for (const det of small ? [-10, 10] : [-14, 0, 14]) osc('sawtooth', f, t, end, mix, det);
-    osc('sine', f / 2, t, end, gain(0.55, amp));
-    if (!small) {
-      const bell = gain(0.05 * vel, amp);
-      const car = osc('sine', f * 2, t, end, bell);
-      const idx = ac.createGain();
-      idx.gain.setValueAtTime(f * 3 * vel, t); idx.gain.exponentialRampToValueAtTime(f * 0.05, t + 0.6);
-      osc('sine', f * 7, t, end, idx); idx.connect(car.frequency);
-    }
-    place(amp, az, el);
-    amp.connect(leadDelay); amp.connect(leadRev);
-  }
-
-  return { ac, out, lead };
+  return { ac, out, ready, start, stop, position, steer, playing: () => !!sources };
 }
 
 // ===== galaxy ================================================================
@@ -1070,7 +1043,7 @@ function boot() {
     return [hit.x, hit.y, hit.z];
   }
 
-  // ---- audio, sequencer and drawing ---------------------------------------
+  // ---- drawing --------------------------------------------------------------
   let studio = null, muted = false, musicPlaying = false;
   try { muted = localStorage.getItem('sound') === 'off'; } catch (e) {}
   const soundBtn = $('sound');
@@ -1083,64 +1056,28 @@ function boot() {
     showSound(); setLevel();
   });
 
-  let t0 = 0, tick = 0, nextTime = 0, timer = 0, lastBusyTick = -1e9;
+  // The score (ad-astra.json) holds every melody note of the track; the ones inside
+  // the loop light the stars as they sound.
+  let score = null, loopNotes = [], lastLoopPos = 0;
+  function loadScore() {
+    if (score) return;
+    score = {};
+    fetch('ad-astra.json').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!d) return;
+      score = d;
+      const a = LOOPS.start * 1000, b = a + LOOPS.loop * 1000;
+      loopNotes = d.melody.filter((n) => n[0] >= a && n[0] < b).map((n) => ({ t: (n[0] - a) / 1000, vel: n[2] / 9 }));
+    }).catch(() => { score = null; });
+  }
+
   const phrases = [];
-  const vq = [];                                     // what the stars should do, stamped with audio time
-  const cue = (e) => { if (!reduceMotion.matches) vq.push(e); };
-  let drawing = false, rec = null, cur = null, lastNote = null, livePos = null;
-  const timeOfTick = (k) => t0 + k * S16;
-  const busy = () => drawing || phrases.length > 0;
+  let drawing = false, rec = null, cur = null, livePos = null, speed = 0, lastMove = null, pendingNova = null;
   const hudBpm = $('hud-bpm');
+  const clock = () => performance.now() / 1000;
 
-  function startClock() {
-    if (timer) return;
-    const ac = studio.ac;
-    t0 = ac.currentTime + 0.06; tick = 0; nextTime = t0; lastBusyTick = 0;
-    timer = setInterval(schedule, 25);
-    schedule();
+  function record() {
+    rec.path.push({ t: clock() - rec.t0, p: livePos.slice(), x: cur.x / innerWidth, y: cur.y / innerHeight, v: Math.min(speed / 900, 1) });
   }
-  function schedule() {
-    const ac = studio.ac;
-    while (nextTime < ac.currentTime + 0.12) { playTick(tick, nextTime); tick++; nextTime += S16; }
-    // Two quiet bars after the last note, the clock stops and the audio graph idles.
-    if (!busy() && tick > lastBusyTick + 32) { clearInterval(timer); timer = 0; cue({ t: nextTime, idle: true }); }
-  }
-  function playTick(k, t) {
-    const chord = SCALE, s = studio;
-    if (busy()) {
-      lastBusyTick = k;
-      if (k % 16 === 0) cue({ t, bar: 1 });
-    }
-
-    // While drawing: a note on each eighth the pointer has moved, and on the
-    // sixteenths in between only when it moves fast — so a melody has room to breathe.
-    if (drawing && cur && livePos) {
-      const dist = lastNote ? Math.hypot(cur.x - lastNote.x, cur.y - lastNote.y) : 60;
-      if (k % 2 === 0 ? dist > 14 : dist > 70) {
-        const pitch = 55 + (1 - cur.y / innerHeight) * 29;       // G3 at the bottom, C6 at the top
-        const vel = Math.min(0.5 + dist / 160, 1);
-        const azm = (cur.x / innerWidth * 2 - 1) * 80, elv = (1 - cur.y / innerHeight) * 40 - 8;
-        const ev = { tick: k, pitch, vel, az: azm, el: elv, pos: livePos.slice() };
-        rec.events.push(ev);
-        s.lead(t, snap(pitch, chord), vel, azm, elv);
-        cue({ t, note: ev.pos, vel });
-        lastNote = { x: cur.x, y: cur.y };
-      }
-    }
-    // Looping strokes, quieter each time round.
-    for (let i = phrases.length - 1; i >= 0; i--) {
-      const ph = phrases[i], rel = k - ph.loopStart;
-      if (rel < 0) continue;
-      const rep = Math.floor(rel / ph.len);
-      if (rep >= ph.reps) { phrases.splice(i, 1); continue; }
-      const off = rel % ph.len, g = Math.pow(0.82, rep + 1);
-      for (const ev of ph.events) if (ev.off === off) {
-        s.lead(t, snap(ev.pitch, chord), ev.vel * g, ev.az, ev.el);
-        cue({ t, note: ev.pos, vel: ev.vel * g });
-      }
-    }
-  }
-
   // Draw on the sky itself; on touch screens only there, so scrolling still works
   // everywhere else. Holding still makes a black hole; letting go, a supernova.
   sky.addEventListener('pointerdown', (e) => {
@@ -1148,61 +1085,87 @@ function boot() {
     const p = onDisk(e.clientX, e.clientY);
     if (!p) return;
     e.preventDefault();
-    if (!studio) { studio = createStudio(); setLevel(); }
+    if (!studio) {
+      studio = createStudio(); setLevel(); loadScore();
+      studio.ready.then(() => { if (busy()) studio.start(); }).catch(() => {});
+    }
     if (studio.ac.state !== 'running') studio.ac.resume();
-    // Drawing state first: the clock's first ticks must already see a stroke.
-    drawing = true; lastNote = null;
+    studio.start();
+    drawing = true; speed = 0;
     cur = { x: e.clientX, y: e.clientY }; livePos = p;
-    rec = { events: [], path: [{ t: studio.ac.currentTime, p }] };
+    lastMove = { x: e.clientX, y: e.clientY, t: clock() };
+    rec = { t0: clock(), path: [] };
+    record();
     try { sky.setPointerCapture(e.pointerId); } catch (x) {}
-    startClock();
+    steerLoop();
     howSeen();
   });
   addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'touch') { hoverAt = [e.clientX, e.clientY]; }
     if (!drawing) return;
+    const now = clock(), dtm = Math.max(now - lastMove.t, 0.008);
+    const inst = Math.hypot(e.clientX - lastMove.x, e.clientY - lastMove.y) / dtm;
+    speed += (inst - speed) * 0.25;
+    lastMove = { x: e.clientX, y: e.clientY, t: now };
     cur = { x: e.clientX, y: e.clientY };
     const p = onDisk(e.clientX, e.clientY);
     if (!p) return;
     livePos = p;
-    const last = rec.path[rec.path.length - 1].p;
-    if (Math.hypot(p[0] - last[0], p[2] - last[2]) > 0.05) rec.path.push({ t: studio.ac.currentTime, p });
+    const lastS = rec.path[rec.path.length - 1];
+    if (Math.hypot(p[0] - lastS.p[0], p[2] - lastS.p[2]) > 0.04 || now - rec.t0 - lastS.t > 0.05) record();
   }, { passive: true });
-  let pendingNova = null;
   function endStroke() {
     if (!drawing) return;
     drawing = false;
-    if (livePos) pendingNova = livePos.slice();
-    const ev = rec.events;
-    if (!ev.length) return;
-    // Loop the stroke from the start of its first bar, a whole number of bars long
-    // (at most four), beginning at the next bar line.
-    const start = Math.floor(ev[0].tick / 16) * 16;
-    const len = Math.min(Math.ceil((ev[ev.length - 1].tick + 1 - start) / 16) * 16, 64);
-    const startTime = timeOfTick(start);
-    phrases.push({
-      len, reps: 4, loopStart: Math.ceil(tick / 16) * 16,
-      events: ev.map((e) => ({ off: e.tick - start, pitch: e.pitch, vel: e.vel, az: e.az, el: e.el, pos: e.pos })).filter((e) => e.off < len),
-      path: rec.path.map((s) => ({ t: s.t - startTime, p: s.p })).filter((s) => s.t >= 0 && s.t <= len * S16),
-    });
+    if (livePos) { pendingNova = livePos.slice(); record(); }
+    // The stroke plays back three more times, sound and path together, each quieter.
+    phrases.push({ start: clock() + 0.15, dur: Math.max(clock() - rec.t0, 0.6), reps: 3, path: rec.path });
     if (phrases.length > 3) phrases.shift();
   }
   sky.addEventListener('pointerup', endStroke);
   sky.addEventListener('pointercancel', endStroke);
   addEventListener('blur', endStroke);
+  const busy = () => drawing || phrases.length > 0;
 
-  // Where a looping stroke's playhead is right now, by replaying its recorded path.
-  function headOf(ph, at) {
-    const base = timeOfTick(ph.loopStart), span = ph.len * S16, path = ph.path;
-    if (at < base || !path.length) return null;
-    const rep = Math.floor((at - base) / span);
+  // Where a replaying stroke is now: position, and the controls recorded with it.
+  function headOf(ph, now) {
+    const el = now - ph.start, path = ph.path;
+    if (el < 0 || !path.length) return null;
+    const rep = Math.floor(el / ph.dur);
     if (rep >= ph.reps) return null;
-    const local = at - base - rep * span;
-    if (local < path[0].t || local > path[path.length - 1].t) return null;
+    const local = el - rep * ph.dur;
     let i = 1;
     while (i < path.length - 1 && path[i].t < local) i++;
-    const a = path[i - 1], b = path[i], u = b.t > a.t ? (local - a.t) / (b.t - a.t) : 0;
-    return [a.p[0] + (b.p[0] - a.p[0]) * u, a.p[1] + (b.p[1] - a.p[1]) * u, a.p[2] + (b.p[2] - a.p[2]) * u];
+    const a = path[Math.max(0, i - 1)], b = path[Math.min(i, path.length - 1)];
+    const u = b.t > a.t ? Math.min(1, Math.max(0, (local - a.t) / (b.t - a.t))) : 0;
+    const mix = (k) => a[k] + (b[k] - a[k]) * u;
+    return { p: [0, 1, 2].map((j) => a.p[j] + (b.p[j] - a.p[j]) * u), x: mix('x'), y: mix('y'), v: mix('v'), gain: Math.pow(0.72, rep + 1) };
+  }
+
+  // Twenty times a second: who is playing (the pen, or the newest replaying stroke),
+  // and so how the loops should sound. Runs on its own timer so the music keeps going
+  // when the galaxy is paused (off screen, or with reduced motion).
+  let heads = [], control = null, steerTimer = 0, quietSince = 0;
+  function steerLoop() { if (!steerTimer) steerTimer = setInterval(steerAudio, 50); }
+  function steerAudio() {
+    const now = clock();
+    if (drawing && now - lastMove.t > 0.06) speed *= 0.8;          // the pen is resting
+    heads = phrases.map((ph) => headOf(ph, now));
+    for (let i = phrases.length - 1; i >= 0; i--) if (!heads[i] && now > phrases[i].start) { phrases.splice(i, 1); heads.splice(i, 1); }
+    control = drawing && cur
+      ? { x: cur.x / innerWidth, y: cur.y / innerHeight, v: Math.min(speed / 900, 1), gain: 1, p: livePos }
+      : heads.filter(Boolean).pop() || null;
+    if (!studio) return;
+    if (control) {
+      quietSince = now;
+      studio.steer((0.3 + 0.7 * control.v) * control.gain, 1, 1 - control.y, (control.x * 2 - 1) * 70, (1 - control.y) * 40 - 8);
+      if (hudBpm.dataset.s !== 'on') { hudBpm.dataset.s = 'on'; hudBpm.textContent = '♪ Ad Astra · melody + pad'; }
+    } else {
+      studio.steer(0, 0, 0.4, 0, 0);
+      if (hudBpm.dataset.s !== 'off') { hudBpm.dataset.s = 'off'; hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm'; }
+      // Twelve quiet seconds: stop the loops and the timer; nothing runs until the next stroke.
+      if (now - quietSince > 12) { studio.stop(); clearInterval(steerTimer); steerTimer = 0; }
+    }
   }
 
   // The hint fades after the first stroke.
@@ -1217,7 +1180,7 @@ function boot() {
   // and seeking stay in sync. The score is timed to the stem mix; the released edit is
   // about 16 s shorter, and OFFSET is where to correct for it if the two drift apart.
   const OFFSET = 0;
-  let score = null, musicTime = null, anchorPos = 0, anchorAt = 0, reported = -1;
+  let musicTime = null, anchorPos = 0, anchorAt = 0, reported = -1;
   let melIdx = 0, lastPos = -1, lastBar = -1;
   addEventListener('music', (e) => {
     musicPlaying = e.detail.playing;
@@ -1225,7 +1188,7 @@ function boot() {
     reported = -1;
     hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm';
     // Fetched only once someone presses play: 18 KB nobody else downloads.
-    if (musicPlaying && !score) fetch('ad-astra.json').then((r) => (r.ok ? r.json() : null)).then((d) => { score = d; }).catch(() => {});
+    if (musicPlaying) loadScore();
     setLevel();
   });
   const digit = (str, i) => (i >= 0 && i < str.length ? str.charCodeAt(i) - 48 : 0) / 9;
@@ -1235,7 +1198,7 @@ function boot() {
     // The player reports its position a few times a second; run a clock between reports.
     if (at !== reported) { reported = at; anchorPos = at; anchorAt = now; }
     const pos = anchorPos + (now - anchorAt) + OFFSET;
-    if (!score) {                                   // until the score arrives: a plain beat
+    if (!score || !score.melody) {                  // until the score arrives: a plain beat
       const b = pos * BPM / 60;
       return Math.exp(-(((b % 1) + 1) % 1) * 7) * 0.6;
     }
@@ -1290,14 +1253,20 @@ function boot() {
     if (!running) return;
     const dt = Math.min((now - last) / 1000, 0.1);
     last = now;
-    const at = studio ? studio.ac.currentTime : 0;
-
-    // What the sequencer asked for, when its moment comes.
-    while (vq.length && vq[0].t <= at) {
-      const e = vq.shift();
-      if (e.note) { shock(e.note, 0.06 + e.vel * 0.14); kickEnv = Math.max(kickEnv, e.vel * 0.45); }
-      else if (e.bar) hudBpm.textContent = SCALE.name + ' · 122 bpm';
-      else if (e.idle) hudBpm.textContent = '122 bpm';
+    // The melody's real notes, as they sound, light the stars where the pen (or a
+    // replaying stroke) is, as brightly as the melody is being played.
+    if (studio && control && loopNotes.length) {
+      const pos = studio.position();
+      if (pos >= 0) {
+        const level = (0.3 + 0.7 * control.v) * control.gain, wrap = pos < lastLoopPos;
+        for (const n of loopNotes) {
+          if (wrap ? (n.t > lastLoopPos || n.t <= pos) : (n.t > lastLoopPos && n.t <= pos)) {
+            shock(control.p, (0.05 + n.vel * 0.12) * level);
+            kickEnv = Math.max(kickEnv, 0.4 * level);
+          }
+        }
+        lastLoopPos = pos;
+      }
     }
     if (pendingNova) { shock(pendingNova, 0.7); pendingNova = null; }
     kickEnv *= Math.exp(-dt * 8);
@@ -1312,8 +1281,8 @@ function boot() {
     else if (hoverAt && wide()) { const p = onDisk(hoverAt[0], hoverAt[1]); W[0].set(p ? p[0] : 0, 0, p ? p[2] : 0, p ? 0.9 : 0); }
     else W[0].w = 0;
     for (let i = 0; i < 3; i++) {
-      const ph = phrases[i], h = ph && studio ? headOf(ph, at) : null;
-      if (h) W[i + 1].set(h[0], h[1], h[2], 2.2); else W[i + 1].w = 0;
+      const h = heads[i];
+      if (h) W[i + 1].set(h.p[0], h.p[1], h.p[2], 2.2); else W[i + 1].w = 0;
     }
 
     const ease = 1 - Math.pow(0.002, dt);
@@ -1355,7 +1324,7 @@ function boot() {
   // Nothing runs while the sky is off screen (phones scroll it away) or the tab is hidden.
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(sky);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { stop(); endStroke(); phrases.length = 0; } else start();
+    if (document.hidden) { stop(); endStroke(); phrases.length = 0; if (studio) studio.stop(); } else start();
   });
   reduceMotion.addEventListener('change', () => reduceMotion.matches ? stop() : start());
 
