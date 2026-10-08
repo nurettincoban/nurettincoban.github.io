@@ -69,19 +69,22 @@ a:hover { text-decoration: underline; }
 .fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
 .sky::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 70%, var(--bg)); }
 .hud {
-  position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 1;
-  font-size: 11.5px; line-height: 1.7; color: var(--muted); letter-spacing: .02em;
+  position: absolute; right: 10px; bottom: 8px; z-index: 1;
+  display: flex; align-items: center; gap: 8px;
   opacity: 0; transition: opacity 1s;
 }
 .hud.on { opacity: 1; }
-.hud b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
-.hud .how { color: var(--accent); }
+.cue { font-size: 12.5px; letter-spacing: .05em; color: var(--accent); transition: opacity 1.2s; }
 .sound {
-  font: inherit; color: var(--text); background: var(--bg); cursor: pointer;
-  border: 1px solid var(--border); border-radius: 999px; padding: 1px 10px; margin-left: 6px;
+  width: 44px; height: 44px; display: grid; place-items: center; padding: 0;
+  border: 0; border-radius: 50%; background: none; color: var(--text); cursor: pointer;
+  transition: color .2s, transform .2s;
 }
-.sound:hover { border-color: var(--muted); }
-.sound[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.sound:hover { color: var(--accent); transform: scale(1.08); }
+.sound svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.sound .off, .sound[aria-pressed="false"] .on { display: none; }
+.sound[aria-pressed="false"] .off { display: block; }
+.sound[aria-pressed="false"] { color: var(--muted); }
 
 main { position: relative; z-index: 2; pointer-events: none; max-width: 600px; margin: 0 auto; padding: calc(58vh + 4px) 16px 140px; }
 main :is(a, button, p, h1, h2, li, img, .card, .fact, footer, .meta) { pointer-events: auto; }
@@ -91,7 +94,7 @@ body.nosky main { padding-top: 96px; }
 @media (min-width: 1000px) {
   .sky { position: fixed; inset: 0; height: auto; }
   .sky::after { display: none; }
-  .hud { left: auto; right: 22px; bottom: 18px; text-align: right; }
+  .hud { right: 18px; bottom: 14px; }
   /* Dim the sky under the text column, so the words never compete with the stars. */
   .veil {
     display: block; position: fixed; inset: 0; z-index: 1; pointer-events: none;
@@ -188,20 +191,6 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .track p { margin: 0 0 6px; }
 .track a { font-size: 14px; }
 .track .track-links { margin: 0; font-size: 14px; color: var(--muted); }
-/* While the stars play Ad Astra, the card says so: it glows from inside (an inset
-   glow, so the card's paint containment cannot clip it), and a playing line appears. */
-.track { transition: box-shadow .5s, border-color .5s; }
-.track.in-stars {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent), inset 0 0 46px color-mix(in srgb, var(--accent) 14%, transparent);
-}
-.now { display: none; align-items: center; gap: 7px; margin: 0 0 6px; font-size: 12.5px; color: var(--accent); }
-.track.in-stars .now { display: flex; }
-.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
-.eq i { width: 2.5px; height: 4px; border-radius: 1px; background: currentColor; animation: eq .8s ease-in-out infinite; }
-.eq i:nth-child(2) { animation-delay: -.25s; } .eq i:nth-child(3) { animation-delay: -.5s; } .eq i:nth-child(4) { animation-delay: -.65s; }
-@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 11px; } }
-@media (prefers-reduced-motion: reduce) { .eq i { animation: none; height: 7px; } }
 .player { grid-column: 1 / -1; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; }
 .player iframe { width: 100%; height: 100%; border: 0; display: block; }
 .track.playing .cover { animation: pulse calc(60s / 122) ease-out infinite; }
@@ -285,9 +274,12 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 
 <div class="sky" id="sky">
   <canvas id="bg" aria-label="A simulated galaxy. Draw in it and it plays what you draw."></canvas>
-  <div class="hud mono" id="hud">
-    <div class="how">draw in the stars — it plays Ad Astra · best with headphones</div>
-    <div><b id="hud-count">—</b> stars · <b id="hud-fps">—</b> fps · <b id="hud-bpm">122 bpm</b><button class="sound" id="sound" type="button" aria-pressed="true">♪ on</button></div>
+  <div class="hud" id="hud">
+    <span class="cue mono" id="hud-cue">draw in the stars</span>
+    <button class="sound" id="sound" type="button" aria-pressed="true" aria-label="Mute">
+      <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>
+    </button>
   </div>
 </div>
 
@@ -370,7 +362,6 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
       <div>
         <div class="track-title">Ad Astra</div>
         <div class="track-meta">NUO · Soundtype · 2023</div>
-        <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Playing in the stars, from this track</div>
         <p class="desc">Debut single: deep bass, atmospheric pads and a synth line that climbs toward the stars. Play it and the galaxy moves with it.</p>
         <p class="track-links"><a href="https://open.spotify.com/track/0aJGy8y6adeTeD7F0crBIW" target="_blank" rel="noopener">Listen on Spotify</a> · <a href="https://mixmag.com.tr/read/nuo-ad-astra-news" target="_blank" rel="noopener">Featured in Mixmag Turkey →</a></p>
       </div>
@@ -1090,7 +1081,7 @@ async function boot() {
   let studio = null, muted = false, musicPlaying = false;
   try { muted = localStorage.getItem('sound') === 'off'; } catch (e) {}
   const soundBtn = $('sound');
-  function showSound() { soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.textContent = muted ? '♪ off' : '♪ on'; }
+  function showSound() { soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.setAttribute('aria-label', muted ? 'Turn sound on' : 'Mute'); }
   // Output level after the limiter: 4.5 dB under full scale, so the page never plays
   // louder than whatever else the visitor is listening to.
   const LEVEL = 0.9 * Math.pow(10, -4.5 / 20);
@@ -1118,7 +1109,6 @@ async function boot() {
 
   const phrases = [];
   let drawing = false, rec = null, cur = null, livePos = null, speed = 0, lastMove = null, pendingNova = null;
-  const hudBpm = $('hud-bpm');
   const clock = () => performance.now() / 1000;
 
   function record() {
@@ -1205,19 +1195,17 @@ async function boot() {
     if (control) {
       quietSince = now;
       studio.steer((0.3 + 0.7 * control.v) * control.gain, 1, 1 - control.y, (control.x * 2 - 1) * 70, (1 - control.y) * 40 - 8);
-      if (hudBpm.dataset.s !== 'on') { hudBpm.dataset.s = 'on'; hudBpm.textContent = '♪ Ad Astra · melody + pad'; trackCard.classList.add('in-stars'); }
     } else {
       studio.steer(0, 0, 0.4, 0, 0);
-      if (hudBpm.dataset.s !== 'off') { hudBpm.dataset.s = 'off'; hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm'; trackCard.classList.remove('in-stars'); }
       // Twelve quiet seconds: stop the loops and the timer; nothing runs until the next stroke.
       if (now - quietSince > 12) { studio.stop(); clearInterval(steerTimer); steerTimer = 0; }
     }
   }
 
-  // The hint fades after the first stroke.
-  const how = hud.querySelector('.how');
+  // The cue steps back once someone has drawn.
+  const cueText = $('hud-cue');
   let seen = false;
-  function howSeen() { if (!seen) { seen = true; setTimeout(() => { how.style.transition = 'opacity 1s'; how.style.opacity = 0.45; }, 4000); } }
+  function howSeen() { if (!seen) { seen = true; setTimeout(() => { cueText.style.opacity = 0.4; }, 3000); } }
 
   // ---- Ad Astra. YouTube shares the playback position but never the audio. So the
   // track was analysed offline from its stems into ad-astra.json — kick and bass per
@@ -1232,7 +1220,6 @@ async function boot() {
     musicPlaying = e.detail.playing;
     musicTime = e.detail.time || null;
     reported = -1;
-    hudBpm.textContent = musicPlaying ? '♪ Ad Astra' : '122 bpm';
     // Fetched only once someone presses play: 18 KB nobody else downloads.
     if (musicPlaying) loadScore();
     setLevel();
@@ -1342,6 +1329,18 @@ async function boot() {
     }
     coverBtn.animate([{ transform: 'scale(1.045)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
   }
+  // Until the first stroke, the words "draw in the stars" shed a few stars that drift
+  // into the galaxy every few seconds: a quiet way of saying where to draw.
+  setInterval(() => {
+    if (seen || reduceMotion.matches || document.hidden || !running) return;
+    const b = cueText.getBoundingClientRect();
+    if (!b.width || b.bottom < 0 || b.top > innerHeight) return;
+    const t0 = performance.now();
+    for (let k = 0; k < 3; k++) {
+      launch({ x0: b.left + Math.random() * b.width, y0: b.top + b.height / 2, size: 2.2, t0, delay: k * 0.18,
+               dur: 1.4 + Math.random() * 0.6, bend: (Math.random() - 0.5) * 240, spin: 0, quiet: true });
+    }
+  }, 2800);
   function coverSparks(count) {
     if (reduceMotion.matches || !coverImg) return;
     const box = coverImg.parentElement.getBoundingClientRect();
@@ -1387,7 +1386,7 @@ async function boot() {
         if (sp.burst && ++landed === Math.floor(burstSize * 0.9)) {
           // The song has entered the galaxy.
           shock([0, 0, 0], 1); kickEnv = 1; look.uGlow.value = Math.max(look.uGlow.value, 1.2);
-        } else if (!sp.burst) kickEnv = Math.max(kickEnv, 0.25);
+        } else if (!sp.burst && !sp.quiet) kickEnv = Math.max(kickEnv, 0.25);
       }
     }
     fctx.globalAlpha = 1;
@@ -1399,8 +1398,6 @@ async function boot() {
   const STEP = 1 / 60;
   let running = false, visible = true, last = 0, acc = 0, t = 0, kickEnv = 0, shockSlot = 0, hoverAt = null;
   let fpsFrames = 0, fpsTime = 0, slow = 0, gapMax = 0, rawGap = 0;
-  const hudFps = $('hud-fps');
-  $('hud-count').textContent = N.toLocaleString('en');
 
   function step() { t += STEP; sim.uTime.value = t; gpu.compute(); }
   let ready = false;                       // nothing renders until the shaders are compiled
@@ -1468,8 +1465,8 @@ async function boot() {
     if (n === 3) acc = 0;
     if (n > 0) draw();
 
-    // Frame rate readout (frames actually drawn, at most the 60 Hz physics rate), and
-    // one fallback: if the GPU genuinely struggles for three seconds, one pixel per CSS
+    // Frame rate (frames actually drawn, at most the 60 Hz physics rate) for one
+    // fallback: if the GPU genuinely struggles for three seconds, one pixel per CSS
     // pixel. A browser that is merely throttling the page (a hidden pane, a background
     // frame, a gap of 200 ms or more) is not a struggling GPU, and is not counted; nor
     // is a display capped at a lower rate, which is why stars are never taken away.
@@ -1478,7 +1475,6 @@ async function boot() {
     gapMax = Math.max(gapMax, rawGap);
     if (fpsTime >= 0.5) {
       const fps = fpsFrames / fpsTime;
-      hudFps.textContent = Math.round(fps);
       if (gapMax > 0.2) slow = 0;
       else slow = fps < 40 ? slow + 1 : 0;
       if (slow >= 6 && dpr > 1) { dpr = 1; renderer.setPixelRatio(1); resize(); slow = 0; }
