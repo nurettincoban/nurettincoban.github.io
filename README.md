@@ -72,11 +72,15 @@ Then open http://localhost:8000. Modules do not load from `file://`.
 
 ## Regenerating
 
-The CV, after editing `cv/index.html`:
+The CV uses the site's light palette and typography in a two-page A4 layout. The editable source and web version are `cv/index.html`; the homepage downloads `cv/nurettin-coban-cv.pdf`.
+
+After editing the source, regenerate the PDF:
 
 ```bash
 msedge --headless=new --no-pdf-header-footer --print-to-pdf=cv/nurettin-coban-cv.pdf cv/index.html
 ```
+
+Alternatively, open `/cv/` locally and print to PDF at A4 and 100% scale, with background graphics enabled and browser headers and footers disabled. Check that the result has two pages and selectable text before replacing the download.
 
 The score and the loops, from the stems (needs numpy, and ffmpeg for the loops):
 

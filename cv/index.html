@@ -3,183 +3,203 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nurettin Çoban — CV</title>
-<!--
-  The CV: this file is the source (and the web version, at /cv/); the PDF is printed
-  from it. After editing, from the repository root:
-    msedge --headless=new --no-pdf-header-footer --print-to-pdf=cv/nurettin-coban-cv.pdf cv/index.html
-  Written for applicant tracking systems as much as for people: one column,
-  standard section names, real text (no icons, tables or text in images), and
-  the technologies spelled out where a recruiter's search would look for them.
--->
+<meta name="description" content="Nurettin Çoban: backend architecture, technical leadership, and open-source AI developer tools. Curriculum vitae.">
+<title>Nurettin Çoban - CV</title>
+<!-- This is the editable source for the downloadable PDF. Print at A4, 100% scale,
+     with background graphics enabled and browser headers/footers disabled.
+     Keep text in document order for screen readers and applicant tracking systems. -->
 <style>
-@page { size: A4; margin: 15mm 16mm 14mm; }
+:root {
+  /* The light palette and typography from assets/css/site.css. */
+  --bg: #f6f4f0; --text: #1a1917; --muted: #67635b;
+  --border: #e0dbd1; --accent: #c2603f;
+  color-scheme: light;
+}
+@page { size: A4; margin: 13mm 16mm; }
 * { box-sizing: border-box; }
-html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html { background: var(--bg); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 body {
-  margin: 0 auto; max-width: 178mm; color: #1d1d1f;
-  font: 9.6pt/1.42 "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  margin: 0; color: var(--text); background: var(--bg);
+  font: 9.4pt/1.42 "Segoe UI", ui-sans-serif, system-ui, -apple-system, Arial, sans-serif;
+  font-variant-ligatures: none;
 }
-a { color: inherit; text-decoration: none; }
-header { margin-bottom: 10pt; }
-h1 { font-size: 21pt; line-height: 1.1; letter-spacing: -.01em; margin: 0 0 3pt; font-weight: 700; }
-.headline { font-size: 11pt; font-weight: 600; color: #b4441a; margin: 0 0 5pt; }
-.contact { font-size: 9pt; color: #444; margin: 0; }
-.contact span + span::before { content: "  ·  "; color: #999; }
-
-h2 {
-  font-size: 9.5pt; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #1d1d1f;
-  margin: 13pt 0 6pt; padding-bottom: 3pt; border-bottom: 1px solid #d6d3cd;
-}
+a { color: var(--accent); text-decoration: none; }
 p { margin: 0; }
-.summary { color: #2a2a2c; }
-
-.skills { margin: 0; padding: 0; list-style: none; }
-.skills li { margin: 0 0 2.5pt; }
-.skills b { font-weight: 600; }
-
-.job { break-inside: avoid; margin-bottom: 9pt; }
-.job:last-child { margin-bottom: 0; }
-.line { display: flex; justify-content: space-between; align-items: baseline; gap: 12pt; }
-.org { font-weight: 700; font-size: 10.3pt; }
-.org .where { font-weight: 400; color: #555; }
-.when { font-size: 9pt; color: #555; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.context { color: #555; font-style: italic; margin: 1pt 0 3pt; }
-.role { margin-top: 5pt; }
-.role .title { font-weight: 600; }
-ul.points { margin: 2pt 0 0; padding-left: 13pt; }
-ul.points li { margin: 0 0 2pt; padding-left: 1pt; }
-ul.points li::marker { color: #b4441a; }
-
-.compact p + p { margin-top: 3pt; }
-.compact b { font-weight: 600; }
-
-@media screen {
-  body { padding: 40px 16px; }
-  html { background: #f3f0e8; }
-  body { background: #fff; padding: 15mm 16mm; margin: 24px auto; box-shadow: 0 2px 24px rgba(0,0,0,.08); max-width: 210mm; }
+header { border-top: 3px solid var(--accent); padding-top: 11pt; margin-bottom: 13pt; }
+h1 { font-size: 27pt; line-height: 1.1; letter-spacing: -.025em; margin: 0 0 5pt; }
+.headline { font-size: 11pt; font-weight: 600; margin-bottom: 6pt; }
+.focus { color: var(--accent); font-size: 10pt; margin-bottom: 7pt; }
+.contact { font-size: 8.7pt; line-height: 1.5; color: var(--muted); }
+.contact a { color: inherit; }
+h2 {
+  margin: 13pt 0 7pt; padding-bottom: 4pt; border-bottom: 1px solid var(--border);
+  color: var(--accent); font-size: 10pt; line-height: 1.2; letter-spacing: .065em;
+  text-transform: uppercase; break-after: avoid;
 }
+h3 { margin: 0; font-size: 11pt; line-height: 1.3; }
+.line { display: flex; justify-content: space-between; align-items: baseline; gap: 10pt; }
+.when, .location { color: var(--muted); font-size: 8.5pt; }
+.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.location { margin: 1pt 0 5pt; }
+.role { margin-top: 9pt; break-inside: avoid; }
+.role .title { font-weight: 650; }
+.note { color: var(--muted); font-size: 8.7pt; margin: 3pt 0; }
+.points { margin: 4pt 0 0; padding-left: 13pt; }
+.points li { margin-bottom: 3pt; padding-left: 1pt; }
+.points li::marker { color: var(--accent); }
+.skills { margin: 0; padding: 0; list-style: none; }
+.skills li { margin-bottom: 3pt; }
+.skills b { font-weight: 650; }
+.job, .project { margin-bottom: 10pt; break-inside: avoid; }
+.project .repo { font-size: 8.7pt; margin: 2pt 0; }
+.page { position: relative; }
+.page + .page { break-before: page; }
+.continued { display: flex; justify-content: space-between; border-top: 3px solid var(--accent); padding-top: 8pt; margin-bottom: 12pt; color: var(--muted); font-size: 8.5pt; }
+.continued b { color: var(--text); font-weight: 650; }
+.compact p + p { margin-top: 4pt; }
+.page-number { margin-top: 12pt; border-top: 1px solid var(--border); padding-top: 5pt; font-size: 8pt; color: var(--muted); text-align: right; }
+.actions { display: flex; justify-content: space-between; gap: 12px; max-width: 210mm; margin: 24px auto 0; padding: 0 20px; font-size: 14px; }
+.actions a { padding: 8px 16px; border: 1px solid var(--border); border-radius: 999px; }
+.actions .download { background: var(--accent); color: white; border-color: var(--accent); font-weight: 600; }
+@media screen {
+  body { padding-bottom: 24px; }
+  .page { max-width: 210mm; margin: 20px auto; padding: 13mm 16mm; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 8px 30px #1a191709; }
+}
+@media screen and (max-width: 600px) {
+  .page { margin: 12px; padding: 24px 20px; }
+  .line { flex-wrap: wrap; gap: 2pt 8pt; }
+  h1 { font-size: 25pt; }
+  .contact { overflow-wrap: anywhere; }
+  .continued { gap: 8pt; }
+}
+@media print { .actions { display: none; } }
 </style>
 </head>
 <body>
-
+<nav class="actions" aria-label="CV actions">
+  <a href="../">Back to portfolio</a>
+  <a class="download" href="nurettin-coban-cv.pdf" download="Nurettin-Coban-CV.pdf">Download PDF</a>
+</nav>
+<main>
+<section class="page" aria-label="Profile and Virta experience">
 <header>
   <h1>Nurettin Çoban</h1>
-  <p class="headline">Senior Software Engineer — Backend &amp; Distributed Systems</p>
-  <p class="contact">
-    <span>Helsinki, Finland</span><span><a href="mailto:cobannurettin@gmail.com">cobannurettin@gmail.com</a></span><span><a href="https://www.linkedin.com/in/nurettincoban/">linkedin.com/in/nurettincoban</a></span><span><a href="https://github.com/nurettincoban">github.com/nurettincoban</a></span><span><a href="https://nurettincoban.github.io/">nurettincoban.github.io</a></span>
-  </p>
+  <p class="headline">Senior Software Engineer</p>
+  <p class="focus">Backend Architecture &amp; Distributed Systems | Technical Leadership | AI Developer Tools</p>
+  <p class="contact">Helsinki, Finland | <a href="mailto:cobannurettin@gmail.com">cobannurettin@gmail.com</a><br>
+    <a href="https://www.linkedin.com/in/nurettincoban/">linkedin.com/in/nurettincoban</a> |
+    <a href="https://github.com/nurettincoban">github.com/nurettincoban</a> |
+    <a href="https://nurettincoban.github.io/">nurettincoban.github.io</a></p>
 </header>
 
 <h2>Summary</h2>
-<p class="summary">Senior software engineer with 12+ years of experience building scalable backend systems and developer platforms, specialising in distributed systems and infrastructure-heavy software. At Virta, builds and operates the EV charging platform that serves charging operators across Europe; as Tech Lead and Interim Engineering Team Lead, led the full delivery of ISO 15118 Plug &amp; Charge and card payment terminals on chargers. Experienced in production systems that integrate hardware, payment infrastructure and large-scale backend services. Creator of ai-prd-workflow, an open-source workflow for AI coding agents supported by Anthropic's open source program.</p>
+<p>Backend engineer and technical leader with 13+ years of software development experience, taking services from product planning and architecture through implementation and production operation. At Virta, guide technical decisions and mentor engineers, with delivery experience spanning EV charging, roaming, and extensible payment integrations. Creator and maintainer of open-source AI developer tools; accepted into Anthropic's Claude for Open Source Program.</p>
 
-<h2>Skills</h2>
+<h2>Core Skills</h2>
 <ul class="skills">
-  <li><b>Backend &amp; architecture:</b> distributed systems, microservices, system design, API design, real-time session processing, pricing and tariff logic</li>
-  <li><b>Languages &amp; frameworks:</b> PHP (Laravel), Node.js, TypeScript, JavaScript, C# / .NET, Python</li>
-  <li><b>Data &amp; infrastructure:</b> PostgreSQL, Elasticsearch, SQL Server, Docker, Kubernetes, cloud-native systems, CI/CD (GitHub Actions)</li>
-  <li><b>EV charging &amp; payments:</b> OCPP, OCPI, OICP (Hubject), ISO 15118 Plug &amp; Charge, roaming, payment terminals</li>
-  <li><b>AI &amp; developer tooling:</b> AI-assisted development workflows, LLM tooling, Claude Code plugins, Agent Skills</li>
-  <li><b>Leadership:</b> technical leadership, hiring, 1:1s, mentoring, cross-team coordination with firmware and third parties</li>
+  <li><b>Backend:</b> PHP/Laravel, Node.js, TypeScript, JavaScript, C#/.NET, REST, GraphQL, PostgreSQL, Microsoft SQL Server</li>
+  <li><b>Architecture &amp; delivery:</b> distributed systems, microservices, API design, technical planning, mentoring, observability, deployments, on-call; working knowledge of Docker and Kubernetes</li>
+  <li><b>Domains &amp; tooling:</b> OICP/Hubject, OCPI, OCPP 1.6, ISO 15118 Plug &amp; Charge, payment terminals, tariffs, AI-assisted development and code review</li>
 </ul>
 
 <h2>Experience</h2>
+<div class="line"><h3>Virta</h3><span class="when">Apr 2020 - Present</span></div>
+<p class="location">Helsinki, Finland | EV charging platform</p>
 
-<div class="job">
-  <div class="line"><span class="org">Virta <span class="where">— Helsinki, Finland</span></span><span class="when">Apr 2020 – Present</span></div>
-  <p class="context">EV charging platform used by charge point operators across Europe.</p>
-
-  <div class="role">
-    <div class="line"><span class="title">Senior Software Engineer</span><span class="when">Jan 2026 – Present</span></div>
-    <ul class="points">
-      <li>Build and operate backend services for a large-scale EV charging platform that powers thousands of charging stations, across tariff systems, roaming integrations and core platform services.</li>
-    </ul>
-  </div>
-
-  <div class="role">
-    <div class="line"><span class="title">Tech Lead &amp; Interim Engineering Team Lead</span><span class="when">Jan 2024 – Jan 2026</span></div>
-    <ul class="points">
-      <li>Led a cross-functional engineering team, combining hands-on technical leadership with people management: 1:1s, hiring and team development; guided architectural decisions and mentored engineers.</li>
-      <li>Drove the end-to-end integration of ISO 15118 Plug &amp; Charge, letting EV drivers authenticate and pay simply by plugging in, with no app or RFID card; coordinated firmware, backend and third-party certificate authorities.</li>
-      <li>Led the integrated payment terminal project, bringing card payments directly to charging stations, a key requirement of public charging accessibility regulations.</li>
-      <li>Owned roaming protocol integrations (OCPI, OICP/Hubject) connecting Virta's network with external charge point operators and eMobility service providers.</li>
-    </ul>
-  </div>
-
-  <div class="role">
-    <div class="line"><span class="title">Senior Software Engineer</span><span class="when">Jan 2022 – Jan 2024</span></div>
-    <ul class="points">
-      <li>Core contributor across tariff management, roaming protocols (OCPI, OICP) and OCPP-based charger communication.</li>
-      <li>Built and maintained backend services for real-time charging sessions, pricing logic and operator-facing APIs.</li>
-    </ul>
-  </div>
-
-  <div class="role">
-    <div class="line"><span class="title">Software Engineer</span><span class="when">Apr 2020 – Jan 2022</span></div>
-    <ul class="points">
-      <li>Delivered backend features across charging infrastructure, roaming, session management and platform integrations in PHP/Laravel and Node.js services.</li>
-    </ul>
-  </div>
+<div class="role">
+  <div class="line"><span class="title">Senior Software Engineer</span><span class="when">Jan 2026 - Present</span></div>
+  <ul class="points">
+    <li>Guide backend architecture and technical delivery within the team, from early planning with product managers through implementation and production operation.</li>
+    <li>Mentor engineers on service and code design across charging, tariffs, roaming, and REST/GraphQL APIs; help resolve technical challenges across team projects.</li>
+    <li>Build in logging, monitoring, alerting, and APM; participate in deployments and on-call incident response.</li>
+  </ul>
+  <p class="note">Lateral move from Engineering Team Lead to the individual contributor track, focusing on architecture and hands-on development.</p>
 </div>
 
-<div class="job">
-  <div class="line"><span class="org">Devolon <span class="where">— Tartu, Estonia</span></span><span class="when">Dec 2018 – Apr 2020</span></div>
-  <div class="line"><span class="title">Software Engineer</span></div>
+<div class="role">
+  <div class="line"><span class="title">Tech Lead, then Engineering Team Lead</span><span class="when">Jan 2024 - Jan 2026</span></div>
+  <p class="note">Sequential roles; approximately 10 months as Engineering Team Lead, responsible for 1:1s, hiring, and team development.</p>
   <ul class="points">
-    <li>Relocated to Estonia to join an IT services and consulting company building Laravel applications for clients.</li>
-    <li>Lead developer of the ordering platform for Naughty BRGR, a Finnish restaurant chain: backend and web management interface for in-store and takeaway ordering, payment processing and kitchen management.</li>
-    <li>Delivered further Laravel web applications for consulting clients.</li>
+    <li>Took primary responsibility for the backend implementation of ISO 15118 Plug &amp; Charge, enabling automatic driver authentication when plugging in.</li>
+    <li>Designed and led payment-terminal integrations that other engineers extended to support additional vendors.</li>
+    <li>Provided OICP/Hubject expertise and contributed to OCPI integrations; coordinated with product managers, other teams, and external partners on delivery.</li>
   </ul>
 </div>
 
-<div class="job">
-  <div class="line"><span class="org">Safee Fleet Management <span class="where">— Gaziantep, Türkiye</span></span><span class="when">Jan 2017 – Dec 2018</span></div>
-  <div class="line"><span class="title">Software Engineer</span></div>
+<div class="role">
+  <div class="line"><span class="title">Senior Software Engineer</span><span class="when">Jan 2022 - Jan 2024</span></div>
   <ul class="points">
-    <li>Full-stack developer on a fleet tracking platform monitoring 10,000+ vehicles in real time.</li>
-    <li>Built interactive map dashboards with Google Maps API and Leaflet on PostgreSQL-backed geospatial services: route visualisation, vehicle tracking and operational monitoring.</li>
-    <li>Built a React Native companion app for the platform; delivered proof-of-concept projects in Angular and PHP (Yii 2).</li>
+    <li>Built and maintained backend services for charging sessions, pricing, tariffs, and operator-facing APIs; contributed to roaming and OCPP-based charger communication.</li>
   </ul>
 </div>
 
-<div class="job">
-  <div class="line"><span class="org">Metanet Group <span class="where">— Gaziantep, Türkiye</span></span><span class="when">Jun 2013 – Nov 2016</span></div>
-  <div class="line"><span class="title">Software Engineer</span></div>
+<div class="role">
+  <div class="line"><span class="title">Software Engineer</span><span class="when">Apr 2020 - Jan 2022</span></div>
   <ul class="points">
-    <li>Joined full-time after a high school internship and progressed to independently architecting and delivering production applications across web, desktop and enterprise domains.</li>
-    <li>Built customer-facing kiosk applications, internal enterprise platforms and field operations tools for solar energy teams; re-architected the deployment of desktop applications.</li>
-    <li>Configured SAP Business One and solar performance monitoring systems. Stack: C#, ASP.NET, SQL Server, SQLite, PHP, Qt.</li>
+    <li>Took primary implementation responsibility for modernizing OICP/Hubject roaming, focusing on correctness, performance, and maintainability; implemented a subsequent protocol version with colleagues.</li>
   </ul>
 </div>
+<p class="page-number" aria-label="Page 1 of 2">1 / 2</p>
+</section>
+
+<section class="page" aria-label="Open source, earlier experience, and education">
+<div class="continued"><b>Nurettin Çoban</b><span>Backend engineering &amp; AI developer tools</span></div>
 
 <h2>Open Source</h2>
-
-<div class="job">
-  <div class="line"><span class="org">ai-prd-workflow <span class="where">— creator and maintainer</span></span><span class="when"><a href="https://github.com/nurettincoban/ai-prd-workflow">github.com/nurettincoban/ai-prd-workflow</a></span></div>
+<div class="project">
+  <h3>ai-prd-workflow <span class="location">| Creator &amp; maintainer</span></h3>
+  <p class="repo"><a href="https://github.com/nurettincoban/ai-prd-workflow">github.com/nurettincoban/ai-prd-workflow</a></p>
   <ul class="points">
-    <li>RFC-driven development workflow for AI coding agents: takes an idea or an existing codebase to a verified PRD, prioritised features, project rules and sequenced RFCs, then implements and reviews one RFC at a time.</li>
-    <li>Ships as a Claude Code plugin and as Agent Skills for Codex, GitHub Copilot, Cursor, Gemini CLI, OpenCode and Devin; ~300 GitHub stars; supported by Anthropic through its open source program.</li>
+    <li>Created a structured workflow that takes ideas or existing code through requirements, prioritized features, project rules, sequenced RFCs, implementation, and review with AI coding agents.</li>
+    <li>Released in March 2025; nearly 300 GitHub stars as of October 2026. Accepted into Anthropic's Claude for Open Source Program in 2026 through this project.</li>
+  </ul>
+</div>
+<div class="project">
+  <h3>diff2ai <span class="location">| Creator &amp; maintainer</span></h3>
+  <p class="repo"><a href="https://github.com/nurettincoban/diff2ai">github.com/nurettincoban/diff2ai</a></p>
+  <ul class="points">
+    <li>Built a CLI for AI-assisted code review with configurable AI runners, multiple reviewers, and checks that findings reference changed lines.</li>
+    <li>Supports GitHub/GitLab review workflows and CI integration, including SARIF output. Built with TypeScript and Node.js.</li>
   </ul>
 </div>
 
+<h2>Earlier Experience</h2>
 <div class="job">
-  <div class="line"><span class="org">diff2ai <span class="where">— creator</span></span><span class="when"><a href="https://www.npmjs.com/package/diff2ai">npmjs.com/package/diff2ai</a></span></div>
+  <div class="line"><h3>Devolon</h3><span class="when">Dec 2018 - Apr 2020</span></div>
+  <p class="location">Software Engineer | Tartu, Estonia</p>
   <ul class="points">
-    <li>Local-first CLI, published on npm, that turns Git diffs into line-accurate AI code reviews with any AI CLI (Claude, Codex, Gemini, Ollama, …): parallel reviewer personas with a judge that validates each finding against the diff.</li>
-    <li>Posts inline comments on GitHub PRs and GitLab MRs; ships a GitHub Action, SARIF export for code scanning and severity gates for CI. TypeScript, Node.js.</li>
+    <li>Delivered the backend and web management interface for Naughty BRGR's ordering platform, supporting in-store and takeaway orders, payments, and kitchen operations.</li>
+    <li>Built additional PHP/Laravel web applications for consulting clients.</li>
+  </ul>
+</div>
+<div class="job">
+  <div class="line"><h3>Safee Fleet Management</h3><span class="when">Jan 2017 - Dec 2018</span></div>
+  <p class="location">Software Engineer | Gaziantep, Türkiye</p>
+  <ul class="points">
+    <li>Worked primarily on frontend development at a fleet-tracking startup, building JSF/PrimeFaces interfaces and interactive dashboards with Google Maps API and Leaflet.</li>
+    <li>Contributed Java and PostgreSQL development, delivered a React Native companion app, and worked on Angular and PHP/Yii 2 prototypes.</li>
+  </ul>
+</div>
+<div class="job">
+  <div class="line"><h3>Metanet Group</h3><span class="when">Jun 2013 - Nov 2016</span></div>
+  <p class="location">Software Engineer | Gaziantep, Türkiye</p>
+  <ul class="points">
+    <li>Progressed to independent ownership of application architecture and delivery across web, desktop, and enterprise systems while pursuing education.</li>
+    <li>Built kiosks, internal platforms, and solar field-operation tools using C#, ASP.NET, SQL Server, SQLite, PHP, and Qt.</li>
+    <li>Worked with SAP Business One configuration and SQL queries, plus solar performance monitoring systems.</li>
   </ul>
 </div>
 
 <h2>Education</h2>
 <div class="compact">
-  <p><b>B.Sc. in Computer Engineering</b> — Hasan Kalyoncu University</p>
-  <p><b>High School Diploma, Information Technologies / Database Programming</b> — Mehmet Rüştü Uzel Technical and Industrial Vocational High School</p>
+  <p><b>B.Sc. in Computer Engineering</b> | Hasan Kalyoncu University<br>Graduated among the top three students in the department; worked while studying.</p>
+  <p><b>Information Technologies / Database Programming</b><br>Mehmet Rüştü Uzel Technical and Industrial Vocational High School</p>
 </div>
 
 <h2>Languages</h2>
-<p>English — professional working proficiency · Turkish — native · Finnish — limited working proficiency</p>
-
-
+<p>English: professional working proficiency | Turkish: native | Finnish: limited working proficiency</p>
+<p class="page-number" aria-label="Page 2 of 2">2 / 2</p>
+</section>
+</main>
 </body>
 </html>
