@@ -14,6 +14,12 @@
 <script>
   // A saved theme applies before the first paint, so a dark-mode visitor never sees a white flash.
   try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
+  // A drone swarm builds the page (assets/js/swarm.js). Until it reaches a block, the
+  // block is held back; after three seconds everything shows, script or not.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('build');
+    setTimeout(function () { document.documentElement.classList.add('done'); }, 3000);
+  }
 </script>
 <link rel="stylesheet" href="assets/css/site.css">
 <script type="importmap">
@@ -139,10 +145,12 @@
       <a class="card" data-repo="ai-prd-workflow" href="https://github.com/nurettincoban/ai-prd-workflow" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" aria-hidden="true"><use href="#i-doc"/></svg><span class="card-name">ai-prd-workflow</span></div>
         <p>RFC-driven development for AI coding agents: idea or existing codebase → verified PRD → features → rules → sequenced RFCs → reviewed code.</p>
+        <span class="card-date mono">Published Mar 2025</span>
       </a>
       <a class="card" data-repo="diff2ai" href="https://github.com/nurettincoban/diff2ai" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" aria-hidden="true"><use href="#i-diff"/></svg><span class="card-name">diff2ai</span></div>
         <p>Turn your Git diffs into high-signal AI code reviews — fast, local, and repo-safe.</p>
+        <span class="card-date mono">Published Sep 2025</span>
       </a>
     </div>
     <a class="all" href="https://github.com/nurettincoban?tab=repositories" target="_blank" rel="noopener">All repositories →</a>
@@ -237,9 +245,13 @@
       <div><h2>Writing</h2><p class="sec-sub">Notes on building software with AI</p></div>
     </div>
     <div class="cards">
+      <a class="card" href="https://medium.com/@nurettinc/229-hours-of-ai-agents-building-a-steam-game-3b8decd52227" target="_blank" rel="noopener">
+        <div class="card-head"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span class="card-name">229 Hours of AI Agents Building a Steam Game</span></div>
+        <p>On Medium · Nov 2026</p>
+      </a>
       <a class="card" href="https://medium.com/@nurettinc/the-state-of-agentic-coding-transforming-software-development-with-ai-09c0447c254d" target="_blank" rel="noopener">
         <div class="card-head"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span class="card-name">The State of Agentic Coding: Transforming Software Development with AI</span></div>
-        <p>On Medium</p>
+        <p>On Medium · Jun 2025</p>
       </a>
     </div>
   </section>

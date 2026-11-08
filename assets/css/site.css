@@ -124,7 +124,7 @@ h1 { font-size: clamp(30px, 6vw, 40px); line-height: 1.1; letter-spacing: -.025e
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .links a.cv { color: #1a0f0b; } }
 
 /* ---- section titles: icon, title, one line saying what is below */
-.sec { margin-top: 60px; content-visibility: auto; contain-intrinsic-size: auto 520px; }
+.sec { margin-top: 60px; }
 .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .sec-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); }
 h2 { font-size: 19px; letter-spacing: -.01em; margin: 0; line-height: 1.2; }
@@ -132,7 +132,9 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0; line-height: 1.2; }
 
 .cards { display: grid; gap: 12px; perspective: 900px; }
 .card {
-  contain: layout paint;
+  /* clip-path, not overflow alone: while a card tilts, Chrome stops rounding the
+     clip of its glow and scene, and the card shows a square corner. */
+  clip-path: inset(0 round 14px);
   --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%;
   position: relative; display: block; padding: 16px 18px; overflow: hidden;
   background: var(--card); border: 1px solid var(--border); border-radius: 14px; color: var(--text);
@@ -151,6 +153,7 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .card-name { font-weight: 650; }
 .card-side { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .card p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+.card-date { display: block; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
 .all { display: inline-block; margin-top: 14px; font-size: 15px; }
 
 /* the Ad Astra card in the dock: the full card on wide screens, a strip on phones */
@@ -251,7 +254,11 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 
 footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 
-/* entrance */
+/* entrance: built by the drone swarm (swarm.js); without it, each block rises in */
+.build .rise { animation: none; opacity: 1; transform: none; }
+.build:not(.done) .rise:not(.built) { clip-path: inset(0 100% 0 0); }
+.swarm { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; }
+
 .rise { opacity: 0; transform: translateY(12px); animation: rise .8s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: calc(var(--i, 0) * 70ms + 250ms); }
 @keyframes rise { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {

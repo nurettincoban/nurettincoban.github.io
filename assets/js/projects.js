@@ -8,8 +8,13 @@
 // repository without its own scene gets lines of code being typed.
 import { tilt, playWhenVisible } from './cards.js';
 
-const USER = 'nurettincoban', CACHE = 'repos-v1', TTL = 6 * 3600 * 1000;
+const USER = 'nurettincoban', CACHE = 'repos-v2', TTL = 6 * 3600 * 1000;
 const ICONS = { 'ai-prd-workflow': 'i-doc', diff2ai: 'i-diff' };
+// Kept off the page even though they have a description, and only the top two are shown.
+const HIDDEN = new Set(['piirra', 'claude-resume', 'claude-usage-bar']), SHOWN = 2;
+
+// The month a repository was first published: these tools came early.
+const published = (iso) => `Published ${new Date(iso).toLocaleDateString('en', { month: 'short', year: 'numeric' })}`;
 
 const diffRows = (y0) => [['+', 60], ['−', 44], ['', 70], ['+', 52], ['+', 36], ['−', 58], ['', 48], ['+', 64]]
   .map(([sign, w], i) => {
@@ -50,9 +55,9 @@ function addScene(card, repo) {
 
 function render(repos) {
   const shown = repos
-    .filter((r) => !r.fork && !r.archived && r.description && r.name !== `${USER}.github.io`)
+    .filter((r) => !r.fork && !r.archived && r.description && r.name !== `${USER}.github.io` && !HIDDEN.has(r.name))
     .sort((a, b) => b.stargazers_count - a.stargazers_count || new Date(b.pushed_at) - new Date(a.pushed_at))
-    .slice(0, 6);
+    .slice(0, SHOWN);
   if (!shown.length) return;
   const list = document.getElementById('projects');
   list.textContent = '';
@@ -60,10 +65,12 @@ function render(repos) {
     const a = Object.assign(document.createElement('a'), { className: 'card', href: r.html_url, target: '_blank', rel: 'noopener' });
     const side = [r.language, r.stargazers_count > 0 ? `★ ${r.stargazers_count.toLocaleString('en')}` : ''].filter(Boolean).join(' · ');
     a.innerHTML = `<div class="card-head"><svg class="ico" aria-hidden="true"><use href="#${ICONS[r.name] || 'i-book'}"/></svg>`
-      + '<span class="card-name"></span>' + (side ? '<span class="card-side"></span>' : '') + '</div><p></p>';
+      + '<span class="card-name"></span>' + (side ? '<span class="card-side"></span>' : '') + '</div><p></p>'
+      + (r.created_at ? '<span class="card-date mono"></span>' : '');
     a.querySelector('.card-name').textContent = r.name;
     if (side) a.querySelector('.card-side').textContent = side;
     a.querySelector('p').textContent = r.description;
+    if (r.created_at) a.querySelector('.card-date').textContent = published(r.created_at);
     addScene(a, r.name);
     tilt(a);
     list.append(a);
@@ -80,8 +87,8 @@ if (!cached || Date.now() - cached.at > TTL) {
     .then((r) => (r.ok ? r.json() : null))
     .then((repos) => {
       if (!Array.isArray(repos)) return;
-      const slim = repos.map(({ name, html_url, description, language, stargazers_count, pushed_at, fork, archived }) =>
-        ({ name, html_url, description, language, stargazers_count, pushed_at, fork, archived }));
+      const slim = repos.map(({ name, html_url, description, language, stargazers_count, created_at, pushed_at, fork, archived }) =>
+        ({ name, html_url, description, language, stargazers_count, created_at, pushed_at, fork, archived }));
       try { localStorage.setItem(CACHE, JSON.stringify({ at: Date.now(), repos: slim })); } catch (e) {}
       render(slim);
     })
