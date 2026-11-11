@@ -72,8 +72,8 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
       if (reduceMotion.matches || !img.complete || !img.naturalWidth) return;
       coverImg = img;
       const box = img.parentElement.getBoundingClientRect();
-      // The visible square of the thumbnail: object-fit: cover, then scaled 1.36 in CSS.
-      const side = Math.min(img.naturalWidth, img.naturalHeight) / 1.36;
+      // The visible square of the cover: object-fit: cover, then zoomed by data-zoom in CSS.
+      const side = Math.min(img.naturalWidth, img.naturalHeight) / (parseFloat(img.dataset.zoom) || 1);
       const sx0 = (img.naturalWidth - side) / 2, sy0 = (img.naturalHeight - side) / 2;
       // Tiles of about five pixels, however large the cover is drawn.
       const G = Math.max(8, Math.min(small ? 14 : 22, Math.round(box.width / 5))), cell = box.width / G, scell = side / G, t0 = performance.now();

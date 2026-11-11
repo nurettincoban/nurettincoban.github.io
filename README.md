@@ -25,6 +25,7 @@ assets/js/
   cards.js                  tilting cards; scenes that play only on screen
   projects.js               the live GitHub project list, cached six hours
   player.js                 the Ad Astra card and its YouTube player
+  adastra.js                the Ad Astra cover section: parallax, grain, dust
   galaxy/
     index.js                wires the galaxy together; the frame loop
     simulation.js           the stars' physics, in two fragment shaders
@@ -37,6 +38,7 @@ assets/js/
     ad-astra.js             the track's tempo, the loop region, the score
     studio.js               the loops and the chain they play through
     conductor.js            turns drawing into how the loops sound
+assets/img/                 the Ad Astra cover art (AVIF, WebP, JPEG; 240, 640, 1200 px)
 assets/audio/               the two loops (melody, pad)
 assets/data/ad-astra.json   the score
 cv/                         the CV: index.html is the source (and /cv/), the PDF is printed from it
@@ -91,6 +93,6 @@ python tools/stems/loops.py <stems folder> assets/audio
 
 ## Music
 
-*Ad Astra* by NUO, released on Soundtype (2023). The loops in `assets/audio` are
+*Ad Astra* by NUO, released on Soundtype (2023). The cover art in `assets/img` is the artist's own; the loops in `assets/audio` are
 excerpts of it, and `assets/data/ad-astra.json` an analysis of it, published here by
 the artist. They are not licensed for reuse.

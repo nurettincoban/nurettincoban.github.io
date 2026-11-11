@@ -163,8 +163,8 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
   box-shadow: 0 10px 30px color-mix(in srgb, #000 22%, transparent);
 }
 .cover { position: relative; width: 120px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: #000; }
-.cover img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.36); transition: transform .5s ease; display: block; }
-.cover:hover img { transform: scale(1.45); }
+.cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; display: block; }
+.cover:hover img { transform: scale(1.08); }
 .play-icon { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle, rgba(0,0,0,.1), rgba(0,0,0,.45)); }
 .play-icon svg { width: 38px; height: 38px; fill: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); transition: transform .2s; }
 .cover:hover .play-icon svg { transform: scale(1.12); }
@@ -252,6 +252,77 @@ a.card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)
 .s-cell { animation: cell 3.2s ease-in-out infinite; opacity: .15; }
 @keyframes cell { 0%, 100% { opacity: .15; } 30% { opacity: .85; } }
 
+/* ---- Ad Astra: the cover art as a window onto Mars. The picture is drawn 8% larger
+   than its frame (data-zoom in the HTML, which the galaxy's cover burst reads) so it
+   can drift: --py follows the scroll, --mx/--my the pointer (adastra.js). Over it, the
+   sky's dust twinkles and a film grain shivers, both only while it is on screen. */
+.astra {
+  --py: 0; --mx: 0; --my: 0; --mars: #e0452b;
+  position: relative; margin: 0; aspect-ratio: 1; overflow: hidden; pointer-events: auto;
+  border-radius: 14px; clip-path: inset(0 round 14px); border: 1px solid var(--border); background: #3a140b;
+  box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--mars) 55%, transparent);
+  isolation: isolate;
+}
+.astra picture { position: absolute; inset: 0; display: block; }
+.astra img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transform: translate3d(calc(var(--mx) * -10px), calc(var(--py) * -3.2% + var(--my) * -10px), 0) scale(1.08);
+  filter: saturate(1.02) contrast(1.02); transition: filter .6s ease;
+}
+.astra:hover img { filter: saturate(1.18) contrast(1.06); }
+/* the vignette, and a dusk at the bottom for the caption */
+.astra::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(10, 2, 0, .45)),
+    linear-gradient(to top, rgba(14, 3, 0, .82), rgba(14, 3, 0, .35) 26%, transparent 42%);
+}
+.astra-dust, .astra-grain { position: absolute; pointer-events: none; z-index: 1; }
+/* dust and far stars drifting over the rock, a little faster than the picture */
+.astra-dust {
+  inset: -20%; opacity: .75; mix-blend-mode: screen;
+  background:
+    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent), radial-gradient(1px 1px at 72% 12%, #ffe9dc, transparent),
+    radial-gradient(1.2px 1.2px at 38% 64%, #fff, transparent), radial-gradient(1px 1px at 86% 48%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 56% 30%, #ffd9c7, transparent), radial-gradient(1px 1px at 22% 82%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 64% 88%, #fff, transparent), radial-gradient(1px 1px at 92% 74%, #ffe9dc, transparent);
+  background-size: 210px 210px, 170px 170px, 250px 250px, 190px 190px, 300px 300px, 230px 230px, 260px 260px, 150px 150px;
+  transform: translate3d(calc(var(--mx) * -30px), calc(var(--py) * -14% + var(--my) * -30px), 0);
+  animation: twinkle 5s ease-in-out infinite alternate paused;
+}
+@keyframes twinkle { 0% { opacity: .35; } 100% { opacity: .85; } }
+.astra-grain {
+  inset: -50%; opacity: .2; mix-blend-mode: overlay;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain .9s steps(6) infinite paused;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-6%, 4%); } 40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); } 80% { transform: translate(7%, 2%); } 100% { transform: translate(-2%, -4%); }
+}
+.astra.live .astra-dust, .astra.live .astra-grain { animation-play-state: running; }
+.astra-cap {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px; color: #fff;
+}
+.astra-kicker { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 236, 228, .82); }
+.astra-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.astra-actions :is(button, a) {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px;
+  font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none;
+  transition: transform .2s, box-shadow .2s, background-color .2s;
+}
+.astra-actions svg { width: 16px; height: 16px; fill: currentColor; }
+.astra-play { border: 0; background: var(--mars); color: #fff; box-shadow: 0 6px 22px -6px rgba(224, 69, 43, .9); }
+.astra-play:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px -6px rgba(224, 69, 43, 1); }
+.astra-play:disabled { cursor: default; opacity: .9; }
+.astra-actions a { border: 1px solid rgba(255, 255, 255, .35); color: #fff; background: rgba(20, 6, 2, .35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.astra-actions a:hover { transform: translateY(-2px); background: rgba(20, 6, 2, .55); }
+/* while the track plays, the frame breathes on the kick (122 BPM) */
+.astra.playing { animation: kick calc(60s / 122) ease-out infinite; }
+@keyframes kick { 0% { box-shadow: 0 24px 70px -18px rgba(224, 69, 43, .95); } 70%, 100% { box-shadow: 0 24px 60px -24px rgba(224, 69, 43, .55); } }
+@media (max-width: 520px) { .astra-cap { padding: 14px; } .astra-actions :is(button, a) { font-size: 14px; padding: 7px 14px; } }
+
 footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
 
 /* entrance: built by the drone swarm (swarm.js); without it, each block rises in */
@@ -265,6 +336,9 @@ footer { margin-top: 72px; color: var(--muted); font-size: 14px; }
   .rise { animation: none; opacity: 1; transform: none; }
   .card, .theme, .links a, .links button { transition: none; }
   .mini.playing .cover { animation: none; }
+  .astra img { transform: scale(1.08); }
+  .astra-dust { transform: none; }
+  .astra-grain, .astra-dust, .astra.playing { animation: none; }
   .scene * { animation: none !important; }
   .s-ticket, .s-steam { opacity: 1; }
 }
