@@ -1,6 +1,6 @@
 /* nurettincoban.github.io — all styles.
-   Colours are tokens on :root, redefined for dark mode; the galaxy and the overlay
-   read --accent and --dot-far from here, so a theme change reaches the stars too. */
+   Colours are tokens on :root, redefined for dark mode; Mars and the overlay read
+   --bg and --accent from here, so a theme change reaches them too. */
 
 :root {
   --bg: #f6f4f0; --text: #1a1917; --muted: #67635b; --border: #e0dbd1;
@@ -70,10 +70,19 @@ body.nosky main { padding-top: 96px; }
 @media (min-width: 1000px) {
   .sky { position: fixed; inset: 0; height: auto; }
   .sky::after { display: none; }
-  /* Dim the sky under the text column, so the words never compete with the stars. */
+  /* Dim Mars under the text column, so the words never compete with the rock. The
+     light theme lays a thicker, wider haze: dark text needs more of it than light. */
   .veil {
     display: block; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 93%, transparent) 0, color-mix(in srgb, var(--bg) 88%, transparent) 42%, transparent 58%);
+  }
+  :root[data-theme="dark"] .veil {
     background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 82%, transparent) 0, color-mix(in srgb, var(--bg) 55%, transparent) 36%, transparent 52%);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .veil {
+      background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 82%, transparent) 0, color-mix(in srgb, var(--bg) 55%, transparent) 36%, transparent 52%);
+    }
   }
   main { margin: 0 0 0 max(48px, 7vw); padding: 96px 0 140px; }
 }

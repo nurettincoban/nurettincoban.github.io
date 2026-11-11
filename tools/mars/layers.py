@@ -1,6 +1,6 @@
 import sys, numpy as np, cv2
 from scipy.ndimage import median_filter, gaussian_filter1d
-S=sys.argv[1]; W=S+'/work/'; O=S+'/mock/mars/'
+S=sys.argv[1]; W=S+'/work/'; O=S+'/out/'
 img=cv2.imread(W+'cover.jpg'); H,Wd=img.shape[:2]
 f=img.astype(np.float32)/255
 d=np.load(W+'depth.npy').astype(np.float32)
@@ -54,6 +54,12 @@ sd_t=np.sqrt(np.maximum(lmean((f-mu_t)**2,inside),1e-5)); sd_r=np.sqrt(np.maximu
 fixed=(f-mu_t)*np.clip(sd_r/sd_t,0.5,1.2)+mu_r
 sh3=cv2.GaussianBlur(cv2.dilate(tb,np.ones((5,5),np.uint8)).astype(np.float32),(0,0),2)[...,None]
 clean=f*(1-sh3)+np.clip(fixed,0,1)*sh3
+# the letters' outlines survive the colour transfer: paint over a thin ring along them
+ring=(cv2.dilate(tb,np.ones((11,11),np.uint8))-cv2.erode(tb,np.ones((9,9),np.uint8)))[:400]
+top=cv2.inpaint((clean[:400]*255).astype(np.uint8),ring,5,cv2.INPAINT_TELEA).astype(np.float32)/255
+rs=cv2.GaussianBlur(ring.astype(np.float32),(0,0),1.5)[...,None]
+rng0=np.random.default_rng(2); top=np.clip(top+rng0.normal(0,0.018,top.shape[:2]+(1,)),0,1)
+clean[:400]=clean[:400]*(1-rs)+top*rs
 
 # --- wall layer: no title, no astronaut, extended below the ridge
 hole=cv2.dilate((am>0.5).astype(np.uint8),np.ones((21,21),np.uint8))
@@ -73,7 +79,7 @@ rng=np.random.default_rng(1); inp=np.clip(inp+rng.normal(0,5,(H,Wd,1)),0,255)
 hm2=cv2.GaussianBlur(cv2.resize(hm,(Wd,H)).astype(np.float32),(0,0),3)[...,None]
 wall=(c8*(1-hm2)+inp*hm2).astype(np.uint8)
 # below the band: darken to nothing (never seen)
-cv2.imwrite(O+'wall.jpg',wall,[cv2.IMWRITE_JPEG_QUALITY,86])
+cv2.imwrite(O+'wall.webp',wall,[cv2.IMWRITE_WEBP_QUALITY,84])
 
 def rgba(rgb,alpha,name,box=None):
     out=np.dstack([rgb,(np.clip(alpha,0,1)*255).astype(np.uint8)])
@@ -86,7 +92,7 @@ tbx=(80,1940,50,340); rgba(img,shape,'title.webp',tbx)
 
 # --- depth maps (8 bit, 1024)
 def save_d(x,name):
-    x=cv2.GaussianBlur(x,(0,0),6); cv2.imwrite(O+name,(np.clip(cv2.resize(x,(1024,1024),interpolation=cv2.INTER_AREA),0,1)*255).astype(np.uint8))
+    x=cv2.GaussianBlur(x,(0,0),6); cv2.imwrite(O+name,(np.clip(cv2.resize(x,(512,512),interpolation=cv2.INTER_AREA),0,1)*255).astype(np.uint8))
 # wall depth: fill ground+astronaut by inpainting the depth
 d8=(np.clip(d/0.5,0,1)*255).astype(np.uint8)       # walls live in 0..0.5
 fillm=((ground>0.01)|(cv2.dilate((am>0.5).astype(np.uint8),np.ones((31,31),np.uint8))>0)).astype(np.uint8)
