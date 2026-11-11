@@ -1,11 +1,12 @@
-// While the Ad Astra video plays, the galaxy performs the track. YouTube shares the
+// While the Ad Astra video plays, the scene performs the track. YouTube shares the
 // playback position but never the audio, so the score — analysed offline from the
 // stems — is played against the video's own clock, and pausing and seeking stay in sync:
-//   - the disk pulses with the kick, and with the bass on the off-beats;
-//   - build-ups and pads make the stars burn brighter;
-//   - the bar where the drums slam back in is a drop, and the galaxy goes supernova;
-//   - every melody note lights its own place on the disk: the angle is its pitch class,
-//     the distance from the core its octave.
+//   - the returned kick follows the kick drum, and the bass on the off-beats;
+//   - build-ups and pads raise the glow;
+//   - the bar where the drums slam back in is a drop: sim.shock at the origin, full strength;
+//   - every melody note is a sim.shock at its own place on a disk: the angle is its
+//     pitch class, the distance from the centre its octave. The caller decides what a
+//     shock looks like (mars/index.js: a flash of light in the canyon).
 // The score is timed to the stem mix; the released edit is about 16 s shorter, and
 // OFFSET is where to correct for it if the two drift apart.
 import { BPM, loadScore } from '../audio/ad-astra.js';
@@ -24,7 +25,7 @@ export function createPerformer({ sim, glow, onKick }) {
       if (time) loadScore().then((s) => { score = s; });
     },
     get active() { return !!clock; },
-    // How hard the disk is kicked right now, 0..1.
+    // How hard the beat hits right now, 0..1.
     frame(now) {
       const at = clock();
       // The player reports its position a few times a second; run a clock between reports.

@@ -1,10 +1,11 @@
-// The overlay the page's pieces fly through on their way into the galaxy:
+// The overlay the page's pieces fly through on their way to the astronaut:
 //   - the Ad Astra cover, taken apart when someone presses play: its tiles leave in a
 //     ripple from the press, arc across the page shrinking into points of light, and
-//     fall into the core;
+//     fall into the visor;
 //   - sparks from the cover on every kick while the track plays, and from the card to
-//     the pen on every note drawn in the sky;
-//   - a few stars shed by the "draw in the stars" cue until the first stroke.
+//     the pen on every note drawn in the canyon;
+//   - a few sparks shed by the "draw in the dust" cue until the first stroke.
+// view.toScreen([0, 0, 0]) is where things land; stars gives the overlay its colours.
 // A plain 2D canvas at one pixel per CSS pixel, running only while something flies.
 import { small, reduceMotion } from '../env.js';
 
@@ -67,7 +68,7 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
   }
 
   return {
-    // The cover comes apart and falls into the galaxy.
+    // The cover comes apart and falls into the visor.
     coverBurst(img, px, py) {
       if (reduceMotion.matches || !img.complete || !img.naturalWidth) return;
       coverImg = img;
@@ -90,7 +91,7 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
       img.style.transition = 'opacity .3s'; img.style.opacity = '0';
       setTimeout(() => { img.style.transition = 'opacity 1.4s'; img.style.opacity = '1'; }, 2800);
     },
-    // A few sparks from the edges of the cover into the core (on a kick).
+    // A few sparks from the edges of the cover into the visor (on a kick).
     fromCover(count) {
       if (reduceMotion.matches || !coverImg) return;
       const box = coverImg.parentElement.getBoundingClientRect();
@@ -105,7 +106,7 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
         });
       }
     },
-    // A note drawn in the sky visibly leaves the card: two sparks fly from the cover to
+    // A note drawn in the canyon visibly leaves the card: two sparks fly from the cover to
     // (tx, ty), and the cover gives a small pulse.
     fromCard(tx, ty, level) {
       if (reduceMotion.matches) return;
@@ -121,7 +122,7 @@ export function createSparks({ view, stars, coverButton, onArrive }) {
       }
       coverButton.animate([{ transform: 'scale(1.045)' }, { transform: 'scale(1)' }], { duration: 240, easing: 'ease-out' });
     },
-    // Three quiet stars drifting from an element into the core.
+    // Three quiet sparks drifting from an element into the visor.
     fromElement(el) {
       if (reduceMotion.matches) return;
       const b = el.getBoundingClientRect();

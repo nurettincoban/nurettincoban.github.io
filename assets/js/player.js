@@ -1,5 +1,5 @@
 // The Ad Astra card. Its YouTube player loads only when someone presses play. The
-// galaxy hears about it through two events: 'cover' (take the cover apart) and 'music'
+// scene hears about it through two events: 'cover' (take the cover apart) and 'music'
 // (playing or not, with a function returning the player's position in seconds).
 import { $ } from './env.js';
 

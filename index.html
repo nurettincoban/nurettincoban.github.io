@@ -28,11 +28,12 @@
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
 } }
 </script>
-<!-- The galaxy's code starts downloading while the page is still being read
-     (after the import map, which must come before any module fetch). -->
+<!-- Mars's code and its largest picture start downloading while the page is still being
+     read (after the import map, which must come before any module fetch). -->
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js">
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/misc/GPUComputationRenderer.js">
-<link rel="modulepreload" href="assets/js/galaxy/index.js">
+<link rel="modulepreload" href="assets/js/mars/index.js">
+<link rel="modulepreload" href="assets/js/mars/scene.js">
+<link rel="preload" as="image" type="image/webp" href="assets/img/mars/wall.webp" crossorigin>
 <link rel="preconnect" href="https://avatars.githubusercontent.com">
 <link rel="preconnect" href="https://api.github.com" crossorigin>
 </head>
@@ -63,9 +64,9 @@
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
 </svg>
 
-<!-- The sky: the galaxy, and the surface you draw on. -->
+<!-- The sky: Mars, from the Ad Astra cover, and the surface you draw on. -->
 <div class="sky" id="sky">
-  <canvas id="bg" aria-label="A simulated galaxy. Draw in it and it plays Ad Astra."></canvas>
+  <canvas id="bg" aria-label="The Ad Astra cover as a canyon on Mars: an astronaut between red rock walls. Draw in it and it plays Ad Astra."></canvas>
 </div>
 <div class="veil" aria-hidden="true"></div>
 
@@ -73,7 +74,7 @@
      player for Ad Astra (a hobby). Its YouTube player opens inside it. -->
 <aside class="dock" id="dock" aria-label="Music">
   <div class="hud" id="hud">
-    <span class="cue mono" id="hud-cue">draw in the stars</span>
+    <span class="cue mono" id="hud-cue">draw in the dust</span>
     <button class="sound" id="sound" type="button" aria-pressed="true" aria-label="Mute">
       <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
       <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>

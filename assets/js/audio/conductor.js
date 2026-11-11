@@ -1,8 +1,8 @@
-// The music drawn in the sky. Owns the studio (created on the first stroke: browsers
+// The music drawn in the canyon. Owns the studio (created on the first stroke: browsers
 // allow sound only after a gesture) and the sound button, and twenty times a second
 // turns whoever is in control — the pen, or the newest replaying stroke — into how the
 // Ad Astra loops sound. Also reports the melody's real notes as they pass, so the
-// galaxy can light up on them.
+// canyon can light up on them.
 import { createStudio } from './studio.js';
 import { loadScore, notesInLoop } from './ad-astra.js';
 

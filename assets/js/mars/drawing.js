@@ -1,10 +1,11 @@
-// Drawing in the sky. A stroke is recorded as it is drawn — where on the disk, where on
+// Drawing in the canyon. A stroke is recorded as it is drawn — where in the scene
+// (view.onDisk: the name is from the galaxy this was first written for), where on
 // screen, how fast — and when it is released it replays itself three times, each
 // quieter. At any moment one of them is in control of the sound: the pen while
 // drawing, otherwise the newest replaying stroke.
 //
 // Drawing happens on the sky itself; on touch screens only there, so scrolling still
-// works everywhere else. Holding still makes a black hole; letting go, a supernova.
+// works everywhere else.
 
 const clock = () => performance.now() / 1000;
 
